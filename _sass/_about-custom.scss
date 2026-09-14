@@ -105,3 +105,23 @@
     transition: none;
   }
 }
+
+/* --- Contact line at the end of the about page ---------------------------- */
+
+.about-contact {
+  margin-top: 2rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--global-divider-color);
+  color: var(--global-text-color-light);
+  font-size: 0.92rem;
+}
+
+/* The school address is written out in bracket form on purpose so it is not
+   a scrapable mailto. Monospace makes that read as deliberate rather than as
+   a typo. */
+.about-email {
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.86em;
+  color: var(--global-text-color);
+  word-break: break-word;
+}
