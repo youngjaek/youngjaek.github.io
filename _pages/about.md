@@ -9,10 +9,12 @@ profile:
   image: prof_pic.jpg
   image_circular: false # crops the image to make it circular
   # Contact row under the photo. Raw HTML because front matter is not run
-  # through Liquid, so an include is not available here.
+  # through Liquid, so the al_email_protect tag is not available here; the
+  # mail icon carries the two address halves in data attributes instead, which
+  # the plugin's delegated click handler reassembles and copies.
   more_info: >
     <div class="contact-row">
-      <a href="mailto:alexykim02@gmail.com" aria-label="Email" title="alexykim02@gmail.com">
+      <a href="#" class="al-email-protect" data-eu="alexykim02" data-ed="gmail.com" aria-label="Copy email address" title="Copy email address">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
       </a>
       <a href="https://github.com/youngjaek" target="_blank" rel="me noopener" aria-label="GitHub" title="GitHub">
@@ -47,9 +49,4 @@ I'm interested in distributed systems, infrastructure and system design, and dat
 
 Right now I'm a Software Engineer Intern at [Easy Dynamics](https://www.easydynamics.com), building multi-region Azure network infrastructure in Terraform and validating reusable modules against NIST 800-53. Before that I built a retrieval and agent workflow for customer support drafting at [Mindgrasp](https://www.mindgrasp.ai), and spent two years at [EchoIT](https://echoit.co.kr) in Seoul on a Java and Spring Boot backend, where a Redis caching layer took P95 API latency from 200 ms to under 30 ms.
 
-My [resume](/resume/) has the full details, and a few things I've built on my own are on the [projects](/projects/) page.
-
-<p class="about-contact">
-  Contact me at <span class="about-email">ykim[at]terpmail[dot]umd[dot]edu</span>
-  or my <a href="mailto:alexykim02@gmail.com">personal email</a>.
-</p>
+My [resume](/resume/) has the full details, and a few things I've built on my own are on the [projects](/projects/) page. The best way to reach me is email, at {% al_email_protect_link "ykim@terpmail.umd.edu" %} for anything school related or {% al_email_protect_link "alexykim02@gmail.com" %} otherwise. Either one copies to your clipboard when you click it.

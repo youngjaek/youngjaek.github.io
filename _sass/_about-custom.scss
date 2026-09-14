@@ -106,22 +106,28 @@
   }
 }
 
-/* --- Contact line at the end of the about page ---------------------------- */
+/* --- Protected email links ------------------------------------------------ */
 
-.about-contact {
-  margin-top: 2rem;
-  padding-top: 1.1rem;
-  border-top: 1px solid var(--global-divider-color);
-  color: var(--global-text-color-light);
-  font-size: 0.92rem;
+/* al_email_protect renders these as <a href="#">, so they must not inherit the
+   theme's default link colour treatment for anchors that go nowhere. */
+.al-email-protect {
+  color: var(--global-theme-color);
+  text-decoration: none;
+  cursor: pointer;
+  /* No nowrap: the school address is long enough to overflow a phone. It wraps
+     at the [at] / [dot] spaces, which stays readable. */
 }
 
-/* The school address is written out in bracket form on purpose so it is not
-   a scrapable mailto. Monospace makes that read as deliberate rather than as
-   a typo. */
-.about-email {
-  font-family: var(--bs-font-monospace, monospace);
-  font-size: 0.86em;
-  color: var(--global-text-color);
-  word-break: break-word;
+.al-email-protect:hover {
+  text-decoration: underline;
+}
+
+.al-email-sep {
+  opacity: 0.6;
+}
+
+/* Inside the contact icon row the link wraps an icon, not text, so it should
+   follow the row's muted styling instead. */
+.contact-row .al-email-protect {
+  color: inherit;
 }
