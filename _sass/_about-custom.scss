@@ -108,38 +108,22 @@
 
 /* --- Protected email addresses ------------------------------------------- */
 
-/* Written in [at]/[dot] form and carried as two halves in data attributes, so
-   the built HTML never contains a real address. The plugin's delegated click
-   handler rejoins and copies it. */
-.email-at {
-  /* Not var(--bs-font-monospace): that is a Bootstrap variable and this site
-     runs with the bootstrap compat layer off, so it is undefined. Courier New
-     is named explicitly rather than left to the generic `monospace` keyword,
-     which resolves to a different face on every platform. */
-  font-family: "Courier New", Courier, monospace;
-  font-size: 0.86em;
-  color: var(--global-text-color);
-  text-decoration: none;
+/* Deliberately styled as ordinary prose links rather than code. The address
+   itself is never printed: the two halves ride in data attributes and the
+   plugin's click handler rejoins and copies them. Printing an obfuscated
+   address inline meant rendering 38 characters where the real one is 21,
+   which wrapped and dominated the paragraph. */
+.email-link {
   cursor: pointer;
-  padding: 0.05em 0.25em;
-  border-radius: 4px;
-  background-color: var(--global-code-bg-color);
-  /* The address wraps at the spaces around [at] / [dot]. Without this the
-     background and rounded corners are drawn once across the whole run, so the
-     second line gets a chipped-looking fragment. `clone` redraws padding and
-     radius on each line box. Wrapping is deliberate: nowrap would push the
-     full Courier address past the viewport on a phone. */
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-  transition:
-    color 0.2s ease,
-    background-color 0.2s ease;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
 }
 
-.email-at:hover,
-.email-at:focus-visible {
-  color: var(--global-theme-color);
-  background-color: var(--global-divider-color);
+.email-link:hover,
+.email-link:focus-visible {
+  text-decoration-style: solid;
 }
 
 /* The mail icon in the contact row uses the same handler but should follow the
