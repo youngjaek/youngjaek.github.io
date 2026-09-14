@@ -1,20 +1,22 @@
 /* ==========================================================================
-   Site-local CV styling.
+   Site-local resume styling.
 
-   Used by the local overrides in _includes/cv/. Everything here is expressed
-   through al-folio's own theme variables (--global-*), so both the light and
-   dark themes follow automatically and nothing needs re-checking when the
-   theme's palette changes.
+   Used by the local overrides in _includes/cv/. Everything is expressed through
+   al-folio's own theme variables (--global-*), so both themes follow along.
    ========================================================================== */
 
-/* --- Shared: entry with a logo on the left -------------------------------- */
+/* --- Entry: logo chip on the left, detail on the right -------------------- */
 
 .cv-entry {
   display: grid;
-  grid-template-columns: 52px 1fr;
+  grid-template-columns: 132px 1fr;
   gap: 1rem;
-  padding: 1.1rem 0;
+  padding: 1.15rem 0;
   border-bottom: 1px solid var(--global-divider-color);
+}
+
+.cv-entry:first-child {
+  padding-top: 0.2rem;
 }
 
 .cv-entry:last-child {
@@ -22,40 +24,54 @@
   padding-bottom: 0.2rem;
 }
 
-.cv-entry:first-child {
-  padding-top: 0.2rem;
-}
-
 .cv-logo {
   display: flex;
   align-items: flex-start;
+}
+
+/* Brand assets come in their own colours (navy, black, blue, red), so they sit
+   on a fixed light chip. That keeps every logo legible in both themes without
+   recolouring anyone's mark, which would be worse than useless on a resume. */
+.cv-chip {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
+  height: 40px;
+  padding: 0 0.65rem;
+  border: 1px solid var(--global-divider-color);
+  border-radius: 8px;
+  background-color: #fff;
+  overflow: hidden;
 }
 
-.cv-logo img {
-  width: 44px;
-  height: 44px;
+.cv-chip img {
+  max-height: 22px;
+  max-width: 124px;
+  width: auto;
+  height: auto;
   object-fit: contain;
-  border-radius: 8px;
-  background-color: #fff; /* many favicons assume a light backdrop */
-  border: 1px solid var(--global-divider-color);
-  padding: 4px;
 }
 
-/* Fallback for organisations with no usable logo. */
-.cv-logo .cv-monogram {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  border: 1px solid var(--global-divider-color);
+/* Square brand marks get more height and no wordmark width allowance. */
+.cv-chip--mark {
+  width: 40px;
+  padding: 0 0.3rem;
+}
+
+.cv-chip--mark img {
+  max-height: 24px;
+  max-width: 24px;
+}
+
+/* Fallback when an organisation has no usable logo. */
+.cv-chip--text {
+  width: 40px;
+  padding: 0;
   background-color: var(--global-bg-color);
   color: var(--global-theme-color);
   font-family: var(--bs-font-monospace, monospace);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
 }
 
 .cv-body {
@@ -85,7 +101,6 @@
   text-decoration: underline;
 }
 
-/* Date / location line. Monospace echoes the theme's own metadata styling. */
 .cv-meta {
   display: flex;
   flex-wrap: wrap;
@@ -120,7 +135,7 @@
   margin-bottom: 0;
 }
 
-/* Education coursework reads better as inline label + value than as bullets. */
+/* Coursework reads better as inline label + value than as bullets. */
 .cv-facts {
   margin: 0.6rem 0 0;
   display: grid;
@@ -128,6 +143,7 @@
 }
 
 .cv-fact {
+  margin: 0;
   font-size: 0.9rem;
   font-weight: 300;
   line-height: 1.55;
@@ -151,7 +167,7 @@
 
 .cv-skill-group {
   display: grid;
-  grid-template-columns: 150px 1fr;
+  grid-template-columns: 132px 1fr;
   gap: 0.5rem 1rem;
   align-items: start;
   padding-bottom: 0.9rem;
@@ -207,15 +223,15 @@
 
 .cv-certs {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
   gap: 0.75rem;
 }
 
 .cv-cert {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.8rem;
-  padding: 0.85rem 1rem;
+  padding: 0.9rem 1rem;
   border: 1px solid var(--global-divider-color);
   border-radius: 10px;
   background-color: var(--global-bg-color);
@@ -229,16 +245,12 @@
   transform: translateY(-2px);
 }
 
-.cv-cert-icon {
-  display: grid;
-  place-items: center;
+.cv-cert-logo {
   flex-shrink: 0;
-  width: 38px;
-  height: 38px;
-  border-radius: 9px;
-  background-color: var(--global-divider-color);
-  color: var(--global-theme-color);
-  font-size: 1.05rem;
+}
+
+.cv-cert-body {
+  min-width: 0;
 }
 
 .cv-cert-name {
@@ -259,7 +271,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  margin-top: 0.3rem;
+  margin-top: 0.35rem;
   font-size: 0.78rem;
   color: var(--global-theme-color);
   text-decoration: none;
@@ -272,20 +284,10 @@
 /* --- Narrow screens ------------------------------------------------------- */
 
 @media (max-width: 576px) {
-  .cv-entry {
-    grid-template-columns: 38px 1fr;
-    gap: 0.75rem;
-  }
-
-  .cv-logo img,
-  .cv-logo .cv-monogram {
-    width: 34px;
-    height: 34px;
-  }
-
+  .cv-entry,
   .cv-skill-group {
     grid-template-columns: 1fr;
-    gap: 0.4rem;
+    gap: 0.5rem;
   }
 
   .cv-skill-name {

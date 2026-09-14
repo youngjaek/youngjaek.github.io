@@ -9,29 +9,30 @@ github: https://github.com/youngjaek/kinoboxd
 
 A global film rating tells you what everyone thinks, which is rarely the question you
 actually have. The question is usually closer to _what do the people whose taste I
-recognise think_ — and that is a much smaller, much noisier sample.
+recognize think_, and that is a much smaller and much noisier sample.
 
 **Kinoboxd** answers it by building rankings scoped to a **cohort**: you and the people you
 follow, or a friend and the people they follow. Most of the work turned out to be data
-engineering rather than ranking — getting the data out politely, modelling it so it could be
-aggregated, and keeping it fresh without re-scraping everything.
+engineering rather than ranking. Getting the data out without hammering anyone's servers,
+modeling it so it could be aggregated, and keeping it fresh without re-scraping everything
+took far longer than the ranking math did.
 
 <div class="proj-stats">
   <div class="proj-stat">
     <div class="proj-stat-value">5 stages</div>
-    <div class="proj-stat-label">Extract → load → rank → export</div>
+    <div class="proj-stat-label">Discover, extract, load, aggregate, rank</div>
   </div>
   <div class="proj-stat">
     <div class="proj-stat-value">Incremental</div>
     <div class="proj-stat-label">Refresh cost scales with new ratings, not history</div>
   </div>
   <div class="proj-stat">
-    <div class="proj-stat-value">Bayesian</div>
-    <div class="proj-stat-label">Ranking that survives small samples</div>
+    <div class="proj-stat-value">Idempotent</div>
+    <div class="proj-stat-label">Ratings upserted, so a failed run is safe to repeat</div>
   </div>
   <div class="proj-stat">
-    <div class="proj-stat-value">1 client</div>
-    <div class="proj-stat-label">All traffic through one throttled session</div>
+    <div class="proj-stat-value">Bayesian</div>
+    <div class="proj-stat-label">Ranking that holds up on small samples</div>
   </div>
 </div>
 
@@ -40,7 +41,7 @@ aggregated, and keeping it fresh without re-scraping everything.
 <div class="pipeline">
   <div class="pipeline-stage">
     <div class="pipeline-stage-name">1 · Discover</div>
-    <div class="pipeline-stage-desc">Crawl the follow graph to resolve who is actually in the cohort.</div>
+    <div class="pipeline-stage-desc">Crawl the follow graph to resolve who is in the cohort.</div>
   </div>
   <div class="pipeline-arrow" aria-hidden="true">→</div>
   <div class="pipeline-stage">
@@ -50,12 +51,12 @@ aggregated, and keeping it fresh without re-scraping everything.
   <div class="pipeline-arrow" aria-hidden="true">→</div>
   <div class="pipeline-stage">
     <div class="pipeline-stage-name">3 · Load</div>
-    <div class="pipeline-stage-desc">Upsert into a normalised schema, idempotent on re-run.</div>
+    <div class="pipeline-stage-desc">Upsert into a normalized schema, idempotent on re-run.</div>
   </div>
   <div class="pipeline-arrow" aria-hidden="true">→</div>
   <div class="pipeline-stage">
     <div class="pipeline-stage-name">4 · Aggregate</div>
-    <div class="pipeline-stage-desc">Materialised view of per-film counts and means per cohort.</div>
+    <div class="pipeline-stage-desc">Materialized view of per-film counts and means per cohort.</div>
   </div>
   <div class="pipeline-arrow" aria-hidden="true">→</div>
   <div class="pipeline-stage">
@@ -64,33 +65,32 @@ aggregated, and keeping it fresh without re-scraping everything.
   </div>
 </div>
 
-Each stage is a separate service module, and the boundary that matters most is that
-**scrapers know about HTML and nothing about ranking, services know the domain and nothing
-about HTTP**. That split is why the ranking logic is testable without touching the network.
+Each stage is a separate service module. The boundary that matters most is that scrapers
+know about HTML and nothing about ranking, while services know the domain and nothing about
+HTTP. That split is why the ranking logic can be tested without touching the network.
 
-## Extraction: being a good citizen is a design constraint
+## Extraction and rate limiting
 
-Crawling a follow graph means a lot of requests to someone else's servers, and the naive
-version — a fan-out of concurrent requests per member — gets you rate-limited within
-minutes and finishes never.
+Crawling a follow graph means a lot of requests to someone else's servers. The naive
+version, a fan-out of concurrent requests per member, gets rate limited within minutes and
+never finishes.
 
-All scrapers share a **single throttled HTTP client**. That is the only place request pacing,
-retries and backoff live, so politeness is a property of the system rather than something
-each scraper has to remember. It is slower per request and dramatically faster end to end,
-because the crawl actually completes.
+All scrapers share a **single throttled HTTP client**. Request pacing, retries and backoff
+live in that one place, so throttling is a property of the system rather than something each
+scraper has to remember. It is slower per request and much faster end to end, because the
+crawl actually completes.
 
 <div class="proj-note">
-  <strong>The lesson:</strong> throughput limits in a scraper are not a tuning parameter you
-  add later. They determine the shape of the whole extraction layer, so the rate limiter has
-  to be the thing everything else is built around.
+  Rate limits are not a setting you tune at the end. They decide the shape of the extraction
+  layer, so the limiter has to be the thing everything else is built around.
 </div>
 
-## Modelling: normalise first, aggregate second
+## Schema design
 
-The temptation with scraped data is to store what you scraped — one row per member per
-page. That makes every later question a reprocessing job.
+The tempting thing with scraped data is to store what you scraped, one row per member per
+page. That turns every later question into a reprocessing job.
 
-Instead the loader normalises into a small relational schema, so a new ranking strategy is a
+The loader normalizes into a small relational schema instead, so a new ranking strategy is a
 query rather than a rewrite:
 
 <div class="proj-table-wrap">
@@ -102,7 +102,7 @@ query rather than a rewrite:
       <tr>
         <td><code>members</code></td>
         <td>one row per Letterboxd user</td>
-        <td>Cohort membership is a join, not a re-crawl.</td>
+        <td>Cohort membership becomes a join, not a re-crawl.</td>
       </tr>
       <tr>
         <td><code>films</code></td>
@@ -116,53 +116,53 @@ query rather than a rewrite:
       </tr>
       <tr>
         <td><code>cohort_film_stats</code></td>
-        <td>materialised, one row per (cohort, film)</td>
+        <td>materialized, one row per (cohort, film)</td>
         <td>Counts and means precomputed so ranking stays cheap.</td>
       </tr>
     </tbody>
   </table>
 </div>
 
-Ratings are **upserted on `(member, film)`** rather than appended. That one decision is what
-makes the whole pipeline safe to re-run: a partial crawl that dies halfway can simply be run
-again, and nothing double-counts.
+Ratings are **upserted on `(member, film)`** rather than appended. That is what makes the
+pipeline safe to re-run: a crawl that dies halfway can just be run again, and nothing
+double counts.
 
-## Incremental sync: the difference between a demo and a tool
+## Incremental sync
 
 The first version re-scraped every member's full history on each refresh. It worked, and it
-got slower every time the cohort grew — which is exactly the property that makes someone
-stop running a tool.
+got slower every time the cohort grew, which is the kind of thing that stops you from
+running a tool at all.
 
-Refreshes now read each member's **"when rated" activity feed** and pull only what changed, so
-a refresh costs roughly the number of _new_ ratings instead of the total. Full crawls became
-the backfill path rather than the normal path.
+Refreshes now read each member's **"when rated" activity feed** and pull only what changed,
+so a refresh costs roughly the number of new ratings instead of the total. Full crawls
+became the backfill path rather than the normal one.
 
 ```python
-# Sketch: only the tail of the activity feed is new work.
+# Only the tail of the activity feed is new work.
 since = last_synced_at(member)
 new_ratings = (r for r in activity_feed(member) if r.rated_at > since)
 upsert_ratings(member, new_ratings)   # idempotent on (member, film)
 ```
 
-## Ranking: why a plain average is wrong here
+## Ranking
 
 Restricting to a cohort collapses sample sizes. A film rated 5 stars by two people would
-outrank one rated 4.5 by three hundred, which is obviously not what anyone means.
+outrank one rated 4.5 by three hundred, which is not what anyone means.
 
-The fix is a **Bayesian weighted average** — pull each film's score toward the cohort mean in
-proportion to how little evidence it has:
+The fix is a **Bayesian weighted average**, which pulls each film's score toward the cohort
+mean in proportion to how little evidence it has:
 
 ```text
 score = (v / (v + m)) * R  +  (m / (v + m)) * C
 ```
 
-where `R` is the film's mean rating within the cohort, `v` its number of ratings, `C` the
-cohort's overall mean, and `m` a tunable prior weight — effectively _how many ratings before
-I start believing you_. A film with few ratings sits near the mean and has to earn its way
-up; a film with many is dominated by its own average.
+`R` is the film's mean rating within the cohort, `v` its number of ratings, `C` the cohort's
+overall mean, and `m` a tunable prior weight, effectively how many ratings you want before
+you start believing a score. A film with few ratings sits near the mean and has to earn its
+way up. A film with many is dominated by its own average.
 
-`m` is the only knob, and it maps directly onto a question you can actually answer: how much
-evidence do I want before I trust a score?
+`m` is the only knob, and it maps onto a question you can actually answer: how much evidence
+do I want before I trust this number?
 
 ## Structure
 
@@ -171,11 +171,10 @@ src/letterboxd_scraper/
     cli.py          # Typer entry point
     config.py       # TOML + env configuration
     db/             # SQLAlchemy models + session helpers
-    scrapers/       # follow graph, ratings, RSS — all via the throttled client
+    scrapers/       # follow graph, ratings, RSS, all via the throttled client
     services/       # cohort, rating, ranking, export, RSS update
 ```
 
-Rankings export to CSV, which is deliberately boring: the point of the pipeline is that the
-interesting output is a query result, not a bespoke format.
+Rankings export to CSV. The useful output is a query result, not a bespoke format.
 
 Source: [youngjaek/kinoboxd](https://github.com/youngjaek/kinoboxd)

@@ -1,0 +1,76 @@
+{%- comment -%}
+  Local override of al_folio_cv's cv/render.liquid.
+
+  Differences from the gem version:
+    * No "Contact Information" or "Professional Summary" cards. Both repeat
+      what the about page already says.
+    * Section order is controlled by `cv_section_order` in the page front
+      matter instead of being fixed with Experience hardcoded first.
+    * Only the RenderCV shape (site.data.cv.cv) is handled. This site has no
+      assets/json/resume.json, so the dual-format branching in the gem version
+      is dead weight here.
+
+  Per-section rendering still delegates to the same cv/<type>.liquid includes,
+  so anything overridden there keeps working.
+{%- endcomment -%}
+
+<div class="post">
+  <header class="post-header">
+    <h1 class="post-title">
+      {{ page.title }}
+      {%- if page.cv_pdf %}
+        <a
+          {% if page.cv_pdf contains '://' %}
+            href="{{ page.cv_pdf }}"
+          {% else %}
+            href="{{ page.cv_pdf | relative_url }}"
+          {% endif %}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="float-right"
+          title="Download as PDF"
+        >
+          <i class="fa-solid fa-file-pdf"></i>
+        </a>
+      {%- endif %}
+    </h1>
+    {%- if page.description %}
+      <p class="post-description">{{ page.description }}</p>
+    {%- endif %}
+  </header>
+
+  <article>
+    <div class="cv">
+      {%- assign cv = site.data.cv.cv -%}
+
+      {%- comment -%}
+        Sections named in `cv_section_order` render first, in that order. Any
+        remaining section in the data file is appended afterwards, so adding a
+        new one to _data/cv.yml never silently drops it.
+      {%- endcomment -%}
+      {%- assign empty_array = '' | split: ',' -%}
+      {%- assign ordered = page.cv_section_order | default: empty_array -%}
+      {%- assign rendered = '' | split: ',' -%}
+
+      {%- for section_title in ordered -%}
+        {%- assign section_entries = cv.sections[section_title] -%}
+        {%- if section_entries -%}
+          {%- assign rendered = rendered | push: section_title -%}
+          {%- include cv/section.liquid title=section_title entries=section_entries -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- for section_pair in cv.sections -%}
+        {%- assign section_title = section_pair[0] -%}
+        {%- unless rendered contains section_title -%}
+          {%- comment -%}
+            Liquid's include tag rejects bracket expressions as parameter
+            values, so the entries have to be bound to a plain variable first.
+          {%- endcomment -%}
+          {%- assign leftover_entries = section_pair[1] -%}
+          {%- include cv/section.liquid title=section_title entries=leftover_entries -%}
+        {%- endunless -%}
+      {%- endfor -%}
+    </div>
+  </article>
+</div>

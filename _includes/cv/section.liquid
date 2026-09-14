@@ -1,0 +1,50 @@
+{%- comment -%}
+  Renders one CV section card and dispatches to the right entry template.
+
+  Extracted so cv/render.liquid can emit sections in an arbitrary order without
+  duplicating the card wrapper and the type dispatch.
+
+  Params: title (section name, matched by name), entries (list).
+{%- endcomment -%}
+
+<a class="anchor" id="{{ include.title | slugify }}"></a>
+<div class="card mt-3 p-3">
+  <h3 class="card-title font-weight-medium">{{ include.title }}</h3>
+  <div>
+    {%- assign entries = include.entries -%}
+    {%- case include.title -%}
+      {%- when 'Education' -%}
+        {%- include cv/education.liquid -%}
+      {%- when 'Experience', 'Volunteer' -%}
+        {%- include cv/experience.liquid -%}
+      {%- when 'Skills' -%}
+        {%- include cv/skills.liquid -%}
+      {%- when 'Certificates' -%}
+        {%- include cv/certificates.liquid -%}
+      {%- when 'Awards', 'Honors and Awards' -%}
+        {%- include cv/awards.liquid -%}
+      {%- when 'Projects', 'Open Source Projects' -%}
+        {%- include cv/projects.liquid -%}
+      {%- when 'Publications' -%}
+        {%- include cv/publications.liquid -%}
+      {%- when 'Languages' -%}
+        {%- include cv/languages.liquid -%}
+      {%- when 'Interests', 'Academic Interests' -%}
+        {%- include cv/interests.liquid -%}
+      {%- when 'References' -%}
+        {%- include cv/references.liquid -%}
+      {%- else -%}
+        {%- for entry in entries -%}
+          {%- if entry.bullet -%}
+            <ul class="card-text font-weight-light list-group list-group-flush">
+              <li class="list-group-item">{{ entry.bullet | markdownify | remove: '<p>' | remove: '</p>' }}</li>
+            </ul>
+          {%- elsif entry.label -%}
+            <div class="card-text font-weight-light">
+              <strong>{{ entry.label }}:</strong> {{ entry.details }}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+    {%- endcase -%}
+  </div>
+</div>

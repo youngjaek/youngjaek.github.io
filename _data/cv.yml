@@ -1,72 +1,19 @@
-# CV data in RenderCV format, rendered by _pages/cv.md (cv_format: rendercv).
+# Resume data in RenderCV format, rendered by _pages/resume.md.
 #
-# Section keys under `sections` are matched by name by the theme, so keep the
-# capitalisation: Experience, Education, Skills, Certificates, Projects,
-# Awards / Honors and Awards, Interests, Languages, Publications, References.
+# Section keys under `sections` are matched by name; display order comes from
+# `cv_section_order` in the page front matter.
+#
+# The top-level contact fields (name / label / email / phone / website /
+# address) and `summary` are deliberately absent: the local render override
+# does not emit the "Contact Information" or "Professional Summary" cards,
+# because the about page already covers both.
 #
 # `start_date` / `end_date` exist so al_folio_cv's al_cv_sort_by_date filter can
-# order entries; `period` is what actually gets displayed (see the local
-# overrides in _includes/cv/). `logo` is a filename in assets/img/logos/, and
-# `monogram` is the two-letter fallback used when there is no usable logo.
+# order entries; `period` is what actually gets displayed. `logo` is a filename
+# in assets/img/logos/, and `monogram` is the fallback when there is no logo.
 
 cv:
-  name: Youngjae Kim
-  label: Software Engineer
-  email: alexykim02@gmail.com
-  phone: (202) 579-3197
-  website: https://youngjaek.github.io
-  address:
-    city: College Park
-    region: MD
-
-  summary: >
-    Computer Science and Mathematics student at the University of Maryland,
-    graduating May 2027. Backend and cloud infrastructure engineer with
-    production experience across Terraform and Azure, Java and Spring Boot,
-    and Python. US Citizen.
-
   sections:
-    Experience:
-      - company: Easy Dynamics
-        position: Software Engineer Intern
-        location: McLean, VA
-        url: https://www.easydynamics.com/
-        logo: easydynamics.png
-        period: Jun 2026 — Present
-        start_date: 2026-06
-        end_date: present
-        highlights:
-          - Built a **multi-region Azure network foundation in Terraform** across two-week sprints, provisioning hub-and-spoke VNets, flow logging, and per-region diagnostics with input validation for region support, CIDR overlaps, and subnet containment, verified by Terraform tests in a plan-only CI gate.
-          - Automated IaC release workflows with CI/CD pipelines, promoting Terraform modules from source repositories into an internal artifact registry and eliminating manual release drift.
-          - Validated reusable Terraform modules across multiple Azure regions against **NIST 800-53** and federal compliance standards, documenting severity-rated gaps and recommendations adopted by module maintainers and platform architects.
-
-      - company: Mindgrasp
-        position: Software Engineer (Part-time)
-        location: Bethesda, MD
-        url: https://www.mindgrasp.ai/
-        logo: mindgrasp.png
-        period: Oct 2025 — May 2026
-        start_date: 2025-10
-        end_date: 2026-05
-        highlights:
-          - Built a **retrieval and context-construction layer (RAG)** for an internal customer support application, assembling relevant ticket and knowledge-base context to auto-draft agent replies.
-          - Implemented a **multi-step agentic workflow with tool calling** to gather and refine context across sources, reducing manual editing time by **28%** across ~60 drafts per week.
-          - Refactored a monolithic Flask backend into modular blueprints with shared middleware and centralized error handling; reviewed 10+ pull requests as the primary technical reviewer on the codebase.
-
-      - company: EchoIT
-        position: Software Engineer
-        location: Seoul, South Korea
-        url: https://echoit.co.kr/
-        monogram: EI
-        period: Jul 2023 — Aug 2025
-        start_date: 2023-07
-        end_date: 2025-08
-        highlights:
-          - Reduced **P95 API latency by 85%** (200 ms to under 30 ms) by implementing a Redis cache-aside layer, achieving a 92% cache hit rate and significantly decreasing database load during peak traffic.
-          - Engineered an **SMS verification service with RabbitMQ** handling 5,000 messages/min, ensuring reliable asynchronous processing with average task time under 50 ms.
-          - Developed and maintained **15+ full-stack features** for a B2B platform using Java (Spring Boot) and MariaDB, owning the lifecycle from schema design to frontend implementation with jQuery.
-          - Built reusable microservice components in a Node.js backend framework and prototyped Elasticsearch integration for search; deployed through a Jenkins and Docker CI/CD pipeline.
-
     Education:
       - institution: University of Maryland
         degree: B.S.
@@ -74,6 +21,7 @@ cv:
         location: College Park, MD
         url: https://umd.edu/
         logo: umd.png
+        logo_style: mark # square brand mark rather than a wordmark
         period: Expected May 2027
         date: 2027-05
         facts:
@@ -85,6 +33,47 @@ cv:
             value: Computer Networks, Database Design, Compilers, Design & Analysis of Computer Algorithms, Advanced Data Structures, Computer Vision
           - label: Math
             value: Advanced Calculus I/II, Linear Algebra, Probability Theory
+
+    Experience:
+      - company: Easy Dynamics
+        position: Software Engineer Intern
+        location: McLean, VA
+        url: https://www.easydynamics.com/
+        logo: easydynamics.svg
+        period: Jun 2026 - Present
+        start_date: 2026-06
+        end_date: present
+        highlights:
+          - Built a **multi-region Azure network foundation in Terraform** across two-week sprints, provisioning hub-and-spoke VNets, flow logging, and per-region diagnostics with input validation for region support, CIDR overlaps, and subnet containment, verified by Terraform tests in a plan-only CI gate.
+          - Automated IaC release workflows with CI/CD pipelines, promoting Terraform modules from source repositories into an internal artifact registry and eliminating manual release drift.
+          - Validated reusable Terraform modules across multiple Azure regions against **NIST 800-53** and federal compliance standards, documenting severity-rated gaps and recommendations adopted by module maintainers and platform architects.
+
+      - company: Mindgrasp
+        position: Software Engineer (Part-time)
+        location: Bethesda, MD
+        url: https://www.mindgrasp.ai/
+        logo: mindgrasp.svg
+        period: Oct 2025 - May 2026
+        start_date: 2025-10
+        end_date: 2026-05
+        highlights:
+          - Built a **retrieval and context-construction layer (RAG)** for an internal customer support application, assembling relevant ticket and knowledge-base context to auto-draft agent replies.
+          - Implemented a **multi-step agentic workflow with tool calling** to gather and refine context across sources, reducing manual editing time by **28%** across roughly 60 drafts per week.
+          - Refactored a monolithic Flask backend into modular blueprints with shared middleware and centralized error handling; reviewed 10+ pull requests as the primary technical reviewer on the codebase.
+
+      - company: EchoIT
+        position: Software Engineer
+        location: Seoul, South Korea
+        url: https://echoit.co.kr/
+        logo: echoit.png
+        period: Jul 2023 - Aug 2025
+        start_date: 2023-07
+        end_date: 2025-08
+        highlights:
+          - Reduced **P95 API latency by 85%** (200 ms to under 30 ms) by implementing a Redis cache-aside layer, achieving a 92% cache hit rate and significantly decreasing database load during peak traffic.
+          - Engineered an **SMS verification service with RabbitMQ** handling 5,000 messages/min, ensuring reliable asynchronous processing with average task time under 50 ms.
+          - Developed and maintained **15+ full-stack features** for a B2B platform using Java (Spring Boot) and MariaDB, owning the lifecycle from schema design to frontend implementation with jQuery.
+          - Built reusable microservice components in a Node.js backend framework and prototyped Elasticsearch integration for search; deployed through a Jenkins and Docker CI/CD pipeline.
 
     Skills:
       - name: Languages
@@ -99,9 +88,9 @@ cv:
     Certificates:
       - name: HashiCorp Terraform Associate (004)
         issuer: HashiCorp
-        icon: fa-solid fa-cubes
+        logo: terraform.svg
         url: https://www.credly.com/badges/3b9ec71f-5de8-4b77-bffc-165169a09ff1/public_url
       - name: Microsoft Azure Fundamentals (AZ-900)
         issuer: Microsoft
-        icon: fa-brands fa-microsoft
+        logo: azure.svg
         url: https://learn.microsoft.com/en-us/users/youngjaekim-0924/credentials/cccc299b1bb1bf98

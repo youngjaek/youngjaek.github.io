@@ -20,7 +20,7 @@ review.
   layout: book-review
   title: The Godfather
   author: Mario Puzo
-  olid: OL43499941M      # Open Library ID — fetches the cover automatically
+  olid: OL43499941M      # Open Library ID, fetches the cover automatically
   isbn: 7539967447       # used if no olid is given
   cover: assets/img/book_covers/the_godfather.jpg   # or supply your own
   categories: crime novels

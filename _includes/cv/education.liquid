@@ -1,12 +1,11 @@
 {%- comment -%}
   Local override of al_folio_cv's cv/education.liquid.
 
-  Mirrors the experience entry layout (logo, linked institution, metadata line)
-  and renders coursework as labelled facts rather than bullets, since
-  "Coursework: A, B, C" reads badly as a list item.
+  Mirrors cv/experience.liquid, and renders coursework as labelled facts rather
+  than bullets since "Coursework: A, B, C" reads badly as a list item.
 
   Consumes per entry: institution, degree, area, location, url, period, logo,
-  monogram, facts (label/value pairs), highlights.
+  logo_style, monogram, facts (label/value pairs), highlights.
 {%- endcomment -%}
 
 <div class="cv-entries">
@@ -14,15 +13,16 @@
     <div class="cv-entry">
       <div class="cv-logo">
         {%- if entry.logo -%}
-          <img
-            src="{{ entry.logo | prepend: '/assets/img/logos/' | relative_url }}"
-            alt="{{ entry.institution }} logo"
-            loading="lazy"
-            width="44"
-            height="44"
-          >
+          <span class="cv-chip {% if entry.logo_style == 'mark' %}cv-chip--mark{% endif %}">
+            <img
+              src="{{ entry.logo | prepend: '/assets/img/logos/' | relative_url }}"
+              alt="{{ entry.institution }}"
+            >
+          </span>
         {%- else -%}
-          <span class="cv-monogram" aria-hidden="true">{{ entry.monogram | default: entry.institution | slice: 0, 2 | upcase }}</span>
+          <span class="cv-chip cv-chip--text" aria-hidden="true">
+            {{- entry.monogram | default: entry.institution | slice: 0, 2 | upcase -}}
+          </span>
         {%- endif -%}
       </div>
 
@@ -43,7 +43,7 @@
           {%- if entry.period -%}
             <span>{{ entry.period }}</span>
           {%- endif -%}
-          {%- if entry.period and entry.location %}<span class="cv-dot" aria-hidden="true"></span>{% endif -%}
+          {%- if entry.period and entry.location -%}<span class="cv-dot" aria-hidden="true"></span>{%- endif -%}
           {%- if entry.location -%}
             <span>{{ entry.location }}</span>
           {%- endif -%}

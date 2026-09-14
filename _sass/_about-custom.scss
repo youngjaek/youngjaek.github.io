@@ -1,0 +1,107 @@
+/* ==========================================================================
+   About page: contact icon row and the name pronunciation footnote.
+   ========================================================================== */
+
+/* --- Contact row (under the profile photo) -------------------------------- */
+
+.contact-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.15rem;
+  margin-top: 0.9rem;
+}
+
+.contact-row a,
+.contact-row .contact-loc {
+  display: inline-flex;
+  color: var(--global-text-color-light);
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.contact-row a:hover {
+  color: var(--global-theme-color);
+  transform: translateY(-2px);
+}
+
+.contact-row svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* The location pin is informational only, so it should not read as clickable. */
+.contact-row .contact-loc {
+  cursor: default;
+}
+
+/* --- Name pronunciation --------------------------------------------------- */
+
+.pron {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+.pron-word {
+  border-bottom: 1px dotted var(--global-text-color-light);
+}
+
+.pron:hover .pron-word,
+.pron:focus-visible .pron-word {
+  border-bottom-color: var(--global-theme-color);
+  color: var(--global-theme-color);
+}
+
+.pron-tip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  z-index: 5;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  background-color: var(--global-text-color);
+  color: var(--global-bg-color);
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease,
+    visibility 0.18s;
+}
+
+/* Little arrow pointing at the name. */
+.pron-tip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--global-text-color);
+}
+
+/* Focus as well as hover, so it is reachable from the keyboard. */
+.pron:hover .pron-tip,
+.pron:focus-visible .pron-tip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-row a:hover {
+    transform: none;
+  }
+
+  .pron-tip {
+    transition: none;
+  }
+}

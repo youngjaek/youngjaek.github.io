@@ -28,6 +28,6 @@ nav: false
 
 {% else %}
 
-<p>Nothing here yet — screenshots are on the way.</p>
+<p>Nothing here yet. Screenshots are on the way.</p>
 
 {% endif %}

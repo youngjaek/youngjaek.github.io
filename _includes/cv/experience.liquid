@@ -1,17 +1,13 @@
 {%- comment -%}
   Local override of al_folio_cv's cv/experience.liquid.
 
-  The gem renders a three-column table-ish row (date | position | company).
-  This version leads with the organisation's logo, links the organisation, and
-  puts dates and location on a single metadata line.
+  Leads with the organisation's logo on a light chip. The chip matters: these
+  are official brand assets in their own colours (navy, black, blue), so a
+  neutral light backdrop keeps every one of them legible in both the light and
+  dark themes without recolouring anyone's logo.
 
-  Consumes, per entry in `entries` (set by cv/render.liquid):
-    company, position, location, url, period, logo, monogram, highlights
-
-  `period` is an explicit display string from _data/cv.yml rather than a
-  formatted start_date/end_date: those stay in the data purely so the gem's
-  al_cv_sort_by_date filter can order entries, and formatting them here would
-  mean relying on Liquid to parse partial "YYYY-MM" dates.
+  Consumes per entry: company, position, location, url, period, logo,
+  logo_style ("mark" for a square brand mark), monogram, summary, highlights.
 {%- endcomment -%}
 
 <div class="cv-entries">
@@ -20,15 +16,16 @@
     <div class="cv-entry">
       <div class="cv-logo">
         {%- if entry.logo -%}
-          <img
-            src="{{ entry.logo | prepend: '/assets/img/logos/' | relative_url }}"
-            alt="{{ org }} logo"
-            loading="lazy"
-            width="44"
-            height="44"
-          >
+          <span class="cv-chip {% if entry.logo_style == 'mark' %}cv-chip--mark{% endif %}">
+            <img
+              src="{{ entry.logo | prepend: '/assets/img/logos/' | relative_url }}"
+              alt="{{ org }}"
+            >
+          </span>
         {%- else -%}
-          <span class="cv-monogram" aria-hidden="true">{{ entry.monogram | default: org | slice: 0, 2 | upcase }}</span>
+          <span class="cv-chip cv-chip--text" aria-hidden="true">
+            {{- entry.monogram | default: org | slice: 0, 2 | upcase -}}
+          </span>
         {%- endif -%}
       </div>
 
@@ -46,7 +43,7 @@
           {%- if entry.period -%}
             <span>{{ entry.period }}</span>
           {%- endif -%}
-          {%- if entry.period and entry.location %}<span class="cv-dot" aria-hidden="true"></span>{% endif -%}
+          {%- if entry.period and entry.location -%}<span class="cv-dot" aria-hidden="true"></span>{%- endif -%}
           {%- if entry.location -%}
             <span>{{ entry.location }}</span>
           {%- endif -%}
