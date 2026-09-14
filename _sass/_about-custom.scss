@@ -112,7 +112,10 @@
    the built HTML never contains a real address. The plugin's delegated click
    handler rejoins and copies it. */
 .email-at {
-  font-family: var(--bs-font-monospace, monospace);
+  /* Not var(--bs-font-monospace): that is a Bootstrap variable and this site
+     runs with the bootstrap compat layer off, so it is undefined and falls
+     back to generic `monospace` (Courier New on Windows). Real stack instead. */
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
   font-size: 0.86em;
   color: var(--global-text-color);
   text-decoration: none;
