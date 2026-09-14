@@ -1,0 +1,155 @@
+<!DOCTYPE html> <html lang="en"> <head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title> kinoboxd | Youngjae Kim </title> <meta name="author" content="Youngjae Kim"> <meta name="description" content="A scraping and ranking pipeline that turns a Letterboxd follow graph into per-cohort film rankings."> <meta name="keywords" content="computer science, software engineering, backend, cloud infrastructure"> <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; media-src 'self' https:; frame-src 'self' https:; connect-src 'self' https:;"> <style>
+  :root {
+    --max-content-width: 930px;
+  }
+</style> <link rel="stylesheet" href="/assets/css/tailwind.css?v=50c64c15cbb9fd1ce6056fdb8bcb4b62"> <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css" integrity="sha256-MVopmdyC2tYTiJ8wlktf0uh0v4NgT+vNdyVFepi7Q0c=" crossorigin="anonymous"> <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.5/css/academicons.min.css" integrity="sha256-SzrCOBJbGVFMahewkgjwnApaV2+av1DwMAA+/QGLyZw=" crossorigin="anonymous"> <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/scholar-icons@1.0.3/css/scholar-icons.css" integrity="sha256-VY3hHVj/hNX3fYG6wtbA6TcKJQl7+FthzGSyIB64klY=" crossorigin="anonymous"> <link defer rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons&amp;display=swap"> <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-github.css?v=591dab5a4e56573bf4ef7fd332894c99" media="" id="highlight_theme_light"> <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%F0%9F%92%BB&lt;/text&gt;&lt;/svg&gt;"> <link rel="stylesheet" href="/assets/css/main.css?v=3116ba77db9ee1581d05bb3e86fbf7f1"> <link rel="canonical" href="https://youngjaek.github.io/projects/kinoboxd/"> <script src="/assets/js/theme.js?v=5286c3e4c334d0ecb8fc0c40ff4fa7ec"></script> <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-native.css?v=5847e5ed4a4568527aa6cfab446049ca" media="none" id="highlight_theme_dark"> <script>
+    initTheme();
+  </script> <link rel="stylesheet" href="/assets/al_email_protect/css/email-protect.css"> </head> <body class="fixed-top-nav sticky-bottom-footer"> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"> <span class="font-weight-bold">Youngjae</span> Kim </a> <button class="navbar-toggler collapsed navbar-toggler-main" type="button" data-nav-toggle="navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse navbar-collapse-main" id="navbarNav"> <ul class="navbar-nav navbar-menu-list flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">about </a> </li> <li class="nav-item "> <a class="nav-link" href="/blog/">blog </a> </li> <li class="nav-item active"> <a class="nav-link" href="/projects/">projects <span class="sr-only">(current)</span> </a> </li> <li class="nav-item "> <a class="nav-link" href="/resume/">resume </a> </li> <li class="nav-item "> <a class="nav-link" href="/repositories/">repositories </a> </li> <li class="nav-item dropdown "> <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-nav-dropdown-toggle="true" aria-haspopup="true" aria-expanded="false">more </a> <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown"> <a class="dropdown-item " href="/books/">bookshelf</a> <div class="dropdown-divider"></div> <a class="dropdown-item " href="/films/">films</a> </div> </li> <li class="nav-item"> <button id="search-toggle" type="button" title="Search" aria-label="Open search"> <span class="nav-link">ctrl k <i class="fa-solid fa-magnifying-glass"></i></span> </button> </li> <li class="toggle-container"> <button id="light-toggle" type="button" title="Change theme" aria-label="Change color theme"> <i class="fa-half-sun-moon" id="light-toggle-system"></i> <i class="fa-solid fa-moon" id="light-toggle-dark"></i> <i class="fa-solid fa-sun" id="light-toggle-light"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="container mt-5" role="main"> <div class="post"> <header class="post-header"> <h1 class="post-title">kinoboxd</h1> <p class="post-description">A scraping and ranking pipeline that turns a Letterboxd follow graph into per-cohort film rankings.</p> </header> <article> <p>A global film rating tells you what everyone thinks, which is rarely the question you actually have. The question is usually closer to <em>what do the people whose taste I recognize think</em>, and that is a much smaller and much noisier sample.</p> <p><strong>Kinoboxd</strong> answers it by building rankings scoped to a <strong>cohort</strong>: you and the people you follow, or a friend and the people they follow. Most of the work turned out to be data engineering rather than ranking. Getting the data out without hammering anyone’s servers, modeling it so it could be aggregated, and keeping it fresh without re-scraping everything took far longer than the ranking math did.</p> <div class="proj-stats"> <div class="proj-stat"> <div class="proj-stat-value">5 stages</div> <div class="proj-stat-label">Discover, extract, load, aggregate, rank</div> </div> <div class="proj-stat"> <div class="proj-stat-value">Incremental</div> <div class="proj-stat-label">Refresh cost scales with new ratings, not history</div> </div> <div class="proj-stat"> <div class="proj-stat-value">Idempotent</div> <div class="proj-stat-label">Ratings upserted, so a failed run is safe to repeat</div> </div> <div class="proj-stat"> <div class="proj-stat-value">Bayesian</div> <div class="proj-stat-label">Ranking that holds up on small samples</div> </div> </div> <h2 id="the-pipeline">The pipeline</h2> <div class="pipeline"> <div class="pipeline-stage"> <div class="pipeline-stage-name">1 · Discover</div> <div class="pipeline-stage-desc">Crawl the follow graph to resolve who is in the cohort.</div> </div> <div class="pipeline-arrow" aria-hidden="true">→</div> <div class="pipeline-stage"> <div class="pipeline-stage-name">2 · Extract</div> <div class="pipeline-stage-desc">Scrape each member's rated films through a throttled HTTP client.</div> </div> <div class="pipeline-arrow" aria-hidden="true">→</div> <div class="pipeline-stage"> <div class="pipeline-stage-name">3 · Load</div> <div class="pipeline-stage-desc">Upsert into a normalized schema, idempotent on re-run.</div> </div> <div class="pipeline-arrow" aria-hidden="true">→</div> <div class="pipeline-stage"> <div class="pipeline-stage-name">4 · Aggregate</div> <div class="pipeline-stage-desc">Materialized view of per-film counts and means per cohort.</div> </div> <div class="pipeline-arrow" aria-hidden="true">→</div> <div class="pipeline-stage"> <div class="pipeline-stage-name">5 · Rank</div> <div class="pipeline-stage-desc">Apply a ranking strategy over the view and export CSV.</div> </div> </div> <p>Each stage is a separate service module. The boundary that matters most is that scrapers know about HTML and nothing about ranking, while services know the domain and nothing about HTTP. That split is why the ranking logic can be tested without touching the network.</p> <h2 id="extraction-and-rate-limiting">Extraction and rate limiting</h2> <p>Crawling a follow graph means a lot of requests to someone else’s servers. The naive version, a fan-out of concurrent requests per member, gets rate limited within minutes and never finishes.</p> <p>All scrapers share a <strong>single throttled HTTP client</strong>. Request pacing, retries and backoff live in that one place, so throttling is a property of the system rather than something each scraper has to remember. It is slower per request and much faster end to end, because the crawl actually completes.</p> <div class="proj-note"> Rate limits are not a setting you tune at the end. They decide the shape of the extraction layer, so the limiter has to be the thing everything else is built around. </div> <h2 id="schema-design">Schema design</h2> <p>The tempting thing with scraped data is to store what you scraped, one row per member per page. That turns every later question into a reprocessing job.</p> <p>The loader normalizes into a small relational schema instead, so a new ranking strategy is a query rather than a rewrite:</p> <div class="proj-table-wrap"> <table class="proj-table"> <thead> <tr> <th>Table</th> <th>Grain</th> <th>Why it exists</th> </tr> </thead> <tbody> <tr> <td><code>members</code></td> <td>one row per Letterboxd user</td> <td>Cohort membership becomes a join, not a re-crawl.</td> </tr> <tr> <td><code>films</code></td> <td>one row per film</td> <td>Deduplicates titles across every member's history.</td> </tr> <tr> <td><code>ratings</code></td> <td>one row per (member, film)</td> <td>The fact table. Upserted, so re-runs are idempotent.</td> </tr> <tr> <td><code>cohort_film_stats</code></td> <td>materialized, one row per (cohort, film)</td> <td>Counts and means precomputed so ranking stays cheap.</td> </tr> </tbody> </table> </div> <p>Ratings are <strong>upserted on <code class="language-plaintext highlighter-rouge">(member, film)</code></strong> rather than appended. That is what makes the pipeline safe to re-run: a crawl that dies halfway can just be run again, and nothing double counts.</p> <h2 id="incremental-sync">Incremental sync</h2> <p>The first version re-scraped every member’s full history on each refresh. It worked, and it got slower every time the cohort grew, which is the kind of thing that stops you from running a tool at all.</p> <p>Refreshes now read each member’s <strong>“when rated” activity feed</strong> and pull only what changed, so a refresh costs roughly the number of new ratings instead of the total. Full crawls became the backfill path rather than the normal one.</p> <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Only the tail of the activity feed is new work.
+</span><span class="n">since</span> <span class="o">=</span> <span class="nf">last_synced_at</span><span class="p">(</span><span class="n">member</span><span class="p">)</span>
+<span class="n">new_ratings</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nf">activity_feed</span><span class="p">(</span><span class="n">member</span><span class="p">)</span> <span class="k">if</span> <span class="n">r</span><span class="p">.</span><span class="n">rated_at</span> <span class="o">&gt;</span> <span class="n">since</span><span class="p">)</span>
+<span class="nf">upsert_ratings</span><span class="p">(</span><span class="n">member</span><span class="p">,</span> <span class="n">new_ratings</span><span class="p">)</span>   <span class="c1"># idempotent on (member, film)
+</span></code></pre></div></div> <h2 id="ranking">Ranking</h2> <p>Restricting to a cohort collapses sample sizes. A film rated 5 stars by two people would outrank one rated 4.5 by three hundred, which is not what anyone means.</p> <p>The fix is a <strong>Bayesian weighted average</strong>, which pulls each film’s score toward the cohort mean in proportion to how little evidence it has:</p> <div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>score = (v / (v + m)) * R  +  (m / (v + m)) * C
+</code></pre></div></div> <p><code class="language-plaintext highlighter-rouge">R</code> is the film’s mean rating within the cohort, <code class="language-plaintext highlighter-rouge">v</code> its number of ratings, <code class="language-plaintext highlighter-rouge">C</code> the cohort’s overall mean, and <code class="language-plaintext highlighter-rouge">m</code> a tunable prior weight, effectively how many ratings you want before you start believing a score. A film with few ratings sits near the mean and has to earn its way up. A film with many is dominated by its own average.</p> <p><code class="language-plaintext highlighter-rouge">m</code> is the only knob, and it maps onto a question you can actually answer: how much evidence do I want before I trust this number?</p> <h2 id="structure">Structure</h2> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>src/letterboxd_scraper/
+    cli.py          # Typer entry point
+    config.py       # TOML + env configuration
+    db/             # SQLAlchemy models + session helpers
+    scrapers/       # follow graph, ratings, RSS, all via the throttled client
+    services/       # cohort, rating, ranking, export, RSS update
+</code></pre></div></div> <p>Rankings export to CSV. The useful output is a query result, not a bespoke format.</p> <p>Source: <a href="https://github.com/youngjaek/kinoboxd" rel="external nofollow noopener" target="_blank">youngjaek/kinoboxd</a></p> </article> </div> </div> <footer class="sticky-bottom mt-5" role="contentinfo"> <div class="container"> © Copyright 2026 Youngjae Kim. Built with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> and hosted by GitHub Pages. </div> </footer> <script>
+  window.alFolio = {
+    compatBootstrap: false
+  };
+</script> <script src="/assets/js/nav-toggle.js?v=141bd79a73ebc0f0b6ea58e440ae79fc"></script> <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script> <script defer src="/assets/js/masonry.js?v=e49affc7bd2646f6acdad1dbe02c2359" type="text/javascript"></script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script> <script src="/assets/al_math/js/mathjax-setup.js"></script> <script src="/assets/js/tooltips-setup.js?v=fe487e99db6c43751e6e7bdb2d6a0611"></script> <script src="/assets/js/no_defer.js?v=53b1b1a645525975c963ce8bf8bfefcf"></script> <script defer src="/assets/js/common.js?v=87baac90f765f2f3362dcf6aaf312a8a"></script> <script defer src="/assets/js/copy_code.js?v=c8a01c11a92744d44b093fc3bda915df" type="text/javascript"></script> <script defer src="/assets/js/jupyter_new_tab.js?v=896d254890d9b47f0281f63bfccf0dee"></script> <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script> <script async src="https://badge.dimensions.ai/badge.js"></script> <script defer src="/assets/js/progress-bar.js?v=499464c5c63ced6cf7ad62509f1e2610" type="text/javascript"></script> <script src="https://cdn.jsdelivr.net/npm/vanilla-back-to-top@7.2.1/dist/vanilla-back-to-top.min.js" integrity="sha256-uMJJ3EoTyfRBoTbR+lrfu1uRQ87RZG8AR3cVNuQVeFg=" crossorigin="anonymous"></script> <script>
+    addBackToTop();
+  </script> <script type="module" src="/assets/al_search/js/search/ninja-keys.min.js"></script> <ninja-keys hidebreadcrumbs noautoloadmdicons placeholder="Type to start searching"></ninja-keys> <script src="/assets/al_search/js/search-setup.js"></script> <script>
+// get the ninja-keys element
+const ninja = document.querySelector('ninja-keys');
+
+// add the home and posts menu items
+ninja.data = [{
+    id: "nav-about",
+    title: "about",
+    section: "Navigation",
+    handler: () => {
+      window.location.href = "/";
+    },
+  },{id: "nav-blog",
+          title: "blog",
+          description: "",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/blog/";
+          },
+        },{id: "nav-projects",
+          title: "projects",
+          description: "Things I have built outside of work.",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/projects/";
+          },
+        },{id: "nav-resume",
+          title: "resume",
+          description: "Education, experience, skills and certifications. PDF version linked above.",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/resume/";
+          },
+        },{id: "nav-repositories",
+          title: "repositories",
+          description: "GitHub activity and a few public repositories.",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/repositories/";
+          },
+        },{id: "dropdown-bookshelf",
+              title: "bookshelf",
+              description: "",
+              section: "Dropdown",
+              handler: () => {
+                window.location.href = "/books/";
+              },
+            },{id: "dropdown-films",
+              title: "films",
+              description: "",
+              section: "Dropdown",
+              handler: () => {
+                window.location.href = "/films/";
+              },
+            },{id: "news-began-working-as-a-software-engineer-at-echoit-in-seoul-south-korea",
+          title: 'Began working as a Software Engineer at EchoIT in Seoul, South Korea.',
+          description: "",
+          section: "News",},{id: "news-joined-mindgrasp-as-a-part-time-software-engineer-working-on-retrieval-and-agent-workflows",
+          title: 'Joined Mindgrasp as a part-time Software Engineer, working on retrieval and agent workflows....',
+          description: "",
+          section: "News",},{id: "news-started-as-a-software-engineer-intern-at-easy-dynamics-in-mclean-va",
+          title: 'Started as a Software Engineer Intern at Easy Dynamics in McLean, VA.',
+          description: "",
+          section: "News",},{id: "projects-kinoboxd",
+          title: 'kinoboxd',
+          description: "A scraping and ranking pipeline that turns a Letterboxd follow graph into per-cohort film rankings.",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/kinoboxd/";
+            },},{
+        id: 'social-email',
+        title: 'email',
+        section: 'Socials',
+        handler: () => {
+          window.open("mailto:%61%6C%65%78%79%6B%69%6D%30%32@%67%6D%61%69%6C.%63%6F%6D", "_blank");
+        },
+      },{
+        id: 'social-github',
+        title: 'GitHub',
+        section: 'Socials',
+        handler: () => {
+          window.open("https://github.com/youngjaek", "_blank");
+        },
+      },{
+        id: 'social-linkedin',
+        title: 'LinkedIn',
+        section: 'Socials',
+        handler: () => {
+          window.open("https://www.linkedin.com/in/ykim02", "_blank");
+        },
+      },{
+        id: 'social-cv',
+        title: 'CV',
+        section: 'Socials',
+        handler: () => {
+          window.open("/assets/pdf/Youngjae_Kim_Resume.pdf", "_blank");
+        },
+      },{
+        id: 'social-rss',
+        title: 'RSS Feed',
+        section: 'Socials',
+        handler: () => {
+          window.open("/feed.xml", "_blank");
+        },
+      },{
+      id: 'light-theme',
+      title: 'Change theme to light',
+      description: 'Change the theme of the site to Light',
+      section: 'Theme',
+      handler: () => {
+        setThemeSetting("light");
+      },
+    },
+    {
+      id: 'dark-theme',
+      title: 'Change theme to dark',
+      description: 'Change the theme of the site to Dark',
+      section: 'Theme',
+      handler: () => {
+        setThemeSetting("dark");
+      },
+    },
+    {
+      id: 'system-theme',
+      title: 'Use system default theme',
+      description: 'Change the theme of the site to System Default',
+      section: 'Theme',
+      handler: () => {
+        setThemeSetting("system");
+      },
+    },];
+
+</script> <script src="/assets/al_search/js/shortcut-key.js"></script> <script defer src="/assets/al_email_protect/js/email-protect.js"></script> </body> </html>

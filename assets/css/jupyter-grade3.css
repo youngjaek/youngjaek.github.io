@@ -209,7 +209,8 @@ body > #header .header-bar {
 
 .btn:hover,
 .btn:active:hover,
-.btn.active:hover {
+.btn.active:hover,
+.open > .dropdown-toggle.btn:hover {
   color: #ef5c00;
   border: 2px solid #e0e0e0;
   background-color: #e0e0e0;
@@ -224,7 +225,9 @@ body > #header .header-bar {
 .btn:active:focus,
 .btn.active:focus,
 .btn:active.focus,
-.btn.active.focus {
+.btn.active.focus,
+.open > .dropdown-toggle.btn:focus,
+.open > .dropdown-toggle.btn.focus {
   color: #ef5c00;
   border: 2px solid #e0e0e0;
   background-color: #e0e0e0 !important;
@@ -249,14 +252,6 @@ body > #header .header-bar {
   background-color: #ffccac !important;
   border-color: #ffccac !important;
   transition: 200ms ease !important;
-}
-
-
-.btn-sm {
-  font-size: inherit;
-  font-weight: normal;
-  height: inherit;
-  line-height: inherit;
 }
 
 button.close {
@@ -304,6 +299,13 @@ div.modal-footer > button:hover {
   border-radius: 1px;
   background-clip: padding-box;
   outline: none;
+}
+
+.modal-content h4 {
+  font-family: sans-serif;
+  font-size: 16pt;
+  color: #303030;
+  padding: 5px;
 }
 
 .modal-body {
@@ -395,6 +397,7 @@ li,
 h1,
 h2,
 h3,
+h4,
 pre,
 code,
 form,
@@ -402,6 +405,7 @@ input,
 button,
 textarea,
 p,
+blockquote,
 th,
 td,
 span,
@@ -478,6 +482,13 @@ pre {
   background-color: #efefef;
   border: 1px solid #e7e7e7;
   border-radius: 2px;
+}
+
+hr {
+  margin-top: 8px;
+  margin-bottom: 10px;
+  border: 0;
+  border-top: 1px solid #126dce;
 }
 
 #complete > select > option:hover {
