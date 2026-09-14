@@ -1,0 +1,2 @@
+# Keep the starter's formatting checks stable across Windows, macOS, and Linux.
+* text=auto eol=lf
