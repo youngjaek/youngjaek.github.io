@@ -1,46 +1,181 @@
 ---
 layout: page
 title: kinoboxd
-description: Letterboxd cohort scraper that builds per-friend-group film rankings.
+description: A scraping and ranking pipeline that turns a Letterboxd follow graph into per-cohort film rankings.
 importance: 1
 category: fun
 github: https://github.com/youngjaek/kinoboxd
 ---
 
 A global film rating tells you what everyone thinks, which is rarely the question you
-actually have. Kinoboxd builds rankings scoped to a **cohort** — you and the people you
-follow, or a friend and the people they follow.
+actually have. The question is usually closer to _what do the people whose taste I
+recognise think_ — and that is a much smaller, much noisier sample.
 
-It crawls the follow graph to define the cohort, scrapes each member's rated films,
-normalises them into a relational schema, and computes rankings from that population only.
+**Kinoboxd** answers it by building rankings scoped to a **cohort**: you and the people you
+follow, or a friend and the people they follow. Most of the work turned out to be data
+engineering rather than ranking — getting the data out politely, modelling it so it could be
+aggregated, and keeping it fresh without re-scraping everything.
 
-### Ranking
+<div class="proj-stats">
+  <div class="proj-stat">
+    <div class="proj-stat-value">5 stages</div>
+    <div class="proj-stat-label">Extract → load → rank → export</div>
+  </div>
+  <div class="proj-stat">
+    <div class="proj-stat-value">Incremental</div>
+    <div class="proj-stat-label">Refresh cost scales with new ratings, not history</div>
+  </div>
+  <div class="proj-stat">
+    <div class="proj-stat-value">Bayesian</div>
+    <div class="proj-stat-label">Ranking that survives small samples</div>
+  </div>
+  <div class="proj-stat">
+    <div class="proj-stat-value">1 client</div>
+    <div class="proj-stat-label">All traffic through one throttled session</div>
+  </div>
+</div>
 
-Restricting to a cohort collapses sample sizes, so a naive average lets a film rated by two
-people outrank one rated by three hundred. Ranking uses a Bayesian weighted average instead,
-pulling each film's score toward the cohort mean in proportion to how few ratings it has:
+## The pipeline
+
+<div class="pipeline">
+  <div class="pipeline-stage">
+    <div class="pipeline-stage-name">1 · Discover</div>
+    <div class="pipeline-stage-desc">Crawl the follow graph to resolve who is actually in the cohort.</div>
+  </div>
+  <div class="pipeline-arrow" aria-hidden="true">→</div>
+  <div class="pipeline-stage">
+    <div class="pipeline-stage-name">2 · Extract</div>
+    <div class="pipeline-stage-desc">Scrape each member's rated films through a throttled HTTP client.</div>
+  </div>
+  <div class="pipeline-arrow" aria-hidden="true">→</div>
+  <div class="pipeline-stage">
+    <div class="pipeline-stage-name">3 · Load</div>
+    <div class="pipeline-stage-desc">Upsert into a normalised schema, idempotent on re-run.</div>
+  </div>
+  <div class="pipeline-arrow" aria-hidden="true">→</div>
+  <div class="pipeline-stage">
+    <div class="pipeline-stage-name">4 · Aggregate</div>
+    <div class="pipeline-stage-desc">Materialised view of per-film counts and means per cohort.</div>
+  </div>
+  <div class="pipeline-arrow" aria-hidden="true">→</div>
+  <div class="pipeline-stage">
+    <div class="pipeline-stage-name">5 · Rank</div>
+    <div class="pipeline-stage-desc">Apply a ranking strategy over the view and export CSV.</div>
+  </div>
+</div>
+
+Each stage is a separate service module, and the boundary that matters most is that
+**scrapers know about HTML and nothing about ranking, services know the domain and nothing
+about HTTP**. That split is why the ranking logic is testable without touching the network.
+
+## Extraction: being a good citizen is a design constraint
+
+Crawling a follow graph means a lot of requests to someone else's servers, and the naive
+version — a fan-out of concurrent requests per member — gets you rate-limited within
+minutes and finishes never.
+
+All scrapers share a **single throttled HTTP client**. That is the only place request pacing,
+retries and backoff live, so politeness is a property of the system rather than something
+each scraper has to remember. It is slower per request and dramatically faster end to end,
+because the crawl actually completes.
+
+<div class="proj-note">
+  <strong>The lesson:</strong> throughput limits in a scraper are not a tuning parameter you
+  add later. They determine the shape of the whole extraction layer, so the rate limiter has
+  to be the thing everything else is built around.
+</div>
+
+## Modelling: normalise first, aggregate second
+
+The temptation with scraped data is to store what you scraped — one row per member per
+page. That makes every later question a reprocessing job.
+
+Instead the loader normalises into a small relational schema, so a new ranking strategy is a
+query rather than a rewrite:
+
+<div class="proj-table-wrap">
+  <table class="proj-table">
+    <thead>
+      <tr><th>Table</th><th>Grain</th><th>Why it exists</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>members</code></td>
+        <td>one row per Letterboxd user</td>
+        <td>Cohort membership is a join, not a re-crawl.</td>
+      </tr>
+      <tr>
+        <td><code>films</code></td>
+        <td>one row per film</td>
+        <td>Deduplicates titles across every member's history.</td>
+      </tr>
+      <tr>
+        <td><code>ratings</code></td>
+        <td>one row per (member, film)</td>
+        <td>The fact table. Upserted, so re-runs are idempotent.</td>
+      </tr>
+      <tr>
+        <td><code>cohort_film_stats</code></td>
+        <td>materialised, one row per (cohort, film)</td>
+        <td>Counts and means precomputed so ranking stays cheap.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+Ratings are **upserted on `(member, film)`** rather than appended. That one decision is what
+makes the whole pipeline safe to re-run: a partial crawl that dies halfway can simply be run
+again, and nothing double-counts.
+
+## Incremental sync: the difference between a demo and a tool
+
+The first version re-scraped every member's full history on each refresh. It worked, and it
+got slower every time the cohort grew — which is exactly the property that makes someone
+stop running a tool.
+
+Refreshes now read each member's **"when rated" activity feed** and pull only what changed, so
+a refresh costs roughly the number of _new_ ratings instead of the total. Full crawls became
+the backfill path rather than the normal path.
+
+```python
+# Sketch: only the tail of the activity feed is new work.
+since = last_synced_at(member)
+new_ratings = (r for r in activity_feed(member) if r.rated_at > since)
+upsert_ratings(member, new_ratings)   # idempotent on (member, film)
+```
+
+## Ranking: why a plain average is wrong here
+
+Restricting to a cohort collapses sample sizes. A film rated 5 stars by two people would
+outrank one rated 4.5 by three hundred, which is obviously not what anyone means.
+
+The fix is a **Bayesian weighted average** — pull each film's score toward the cohort mean in
+proportion to how little evidence it has:
 
 ```text
 score = (v / (v + m)) * R  +  (m / (v + m)) * C
 ```
 
-where `R` is the film's mean in the cohort, `v` its number of ratings, `C` the cohort mean,
-and `m` a tunable prior weight — effectively how much evidence you require before believing
-a score.
+where `R` is the film's mean rating within the cohort, `v` its number of ratings, `C` the
+cohort's overall mean, and `m` a tunable prior weight — effectively _how many ratings before
+I start believing you_. A film with few ratings sits near the mean and has to earn its way
+up; a film with many is dominated by its own average.
 
-### Structure
+`m` is the only knob, and it maps directly onto a question you can actually answer: how much
+evidence do I want before I trust a score?
+
+## Structure
 
 ```
 src/letterboxd_scraper/
     cli.py          # Typer entry point
     config.py       # TOML + env configuration
     db/             # SQLAlchemy models + session helpers
-    scrapers/       # follow graph, ratings, RSS — via a throttled client
+    scrapers/       # follow graph, ratings, RSS — all via the throttled client
     services/       # cohort, rating, ranking, export, RSS update
 ```
 
-Scrapers know about HTML and nothing about ranking; services know the domain and nothing
-about HTTP. Refreshes are incremental, driven by each member's "when rated" activity feed,
-so an update costs roughly the number of _new_ ratings rather than the full history.
+Rankings export to CSV, which is deliberately boring: the point of the pipeline is that the
+interesting output is a query result, not a bespoke format.
 
 Source: [youngjaek/kinoboxd](https://github.com/youngjaek/kinoboxd)

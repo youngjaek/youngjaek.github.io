@@ -1,0 +1,34 @@
+{%- comment -%}
+  Local override of al_folio_cv's cv/certificates.liquid.
+
+  Renders each certification as a verifiable card. The gem's version emits a
+  bare name/issuer row with an empty date column, which left a dangling dash.
+
+  Consumes per entry: name, issuer, url (credential verification link), icon
+  (Font Awesome class), date.
+{%- endcomment -%}
+
+<div class="cv-certs">
+  {%- for entry in entries -%}
+    <div class="cv-cert">
+      <span class="cv-cert-icon" aria-hidden="true">
+        <i class="{{ entry.icon | default: 'fa-solid fa-certificate' }}"></i>
+      </span>
+
+      <div>
+        <div class="cv-cert-name">{{ entry.name }}</div>
+        <div class="cv-cert-issuer">
+          {{ entry.issuer -}}
+          {%- if entry.date %} · {{ entry.date }}{% endif %}
+        </div>
+
+        {%- if entry.url %}
+          <a class="cv-cert-verify" href="{{ entry.url }}" target="_blank" rel="noopener noreferrer">
+            Verify credential
+            <i class="fa-solid fa-arrow-up-right-from-square fa-xs"></i>
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endfor -%}
+</div>

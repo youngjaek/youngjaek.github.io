@@ -1,0 +1,40 @@
+---
+# Local override of the al_folio_core stylesheet entry point.
+#
+# Verbatim copy of the gem's assets/css/main.scss with two site-local partials
+# appended at the end. Keeping it a copy rather than a rewrite means theme
+# updates stay mechanical — after `bundle update`, run
+# `bundle exec al-folio upgrade overrides diff assets/css/main.scss`.
+---
+
+@charset "utf-8";
+
+/* Built-in Sass modules */
+@use "sass:math";
+@use "sass:string";
+
+@use "variables" with (
+  $max-content-width: {{site.max_width | default: "930px"}}
+);
+
+@use "themes";
+@use "layout";
+
+// Core styles organized by usage
+@use "typography";
+@use "navbar";
+@use "footer";
+@use "blog";
+@use "publications";
+@use "components";
+@use "utilities";
+
+// Other specialized styles
+@use "tabs";
+@use "teachings";
+@use "typograms";
+
+// ---- Site-local additions (not part of the theme) -------------------------
+@use "cv-custom";
+@use "project-custom";
+@use "gallery";

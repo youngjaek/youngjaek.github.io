@@ -1,0 +1,69 @@
+{%- comment -%}
+  Local override of al_folio_cv's cv/experience.liquid.
+
+  The gem renders a three-column table-ish row (date | position | company).
+  This version leads with the organisation's logo, links the organisation, and
+  puts dates and location on a single metadata line.
+
+  Consumes, per entry in `entries` (set by cv/render.liquid):
+    company, position, location, url, period, logo, monogram, highlights
+
+  `period` is an explicit display string from _data/cv.yml rather than a
+  formatted start_date/end_date: those stay in the data purely so the gem's
+  al_cv_sort_by_date filter can order entries, and formatting them here would
+  mean relying on Liquid to parse partial "YYYY-MM" dates.
+{%- endcomment -%}
+
+<div class="cv-entries">
+  {%- for entry in entries -%}
+    {%- assign org = entry.company | default: entry.name | default: entry.organization -%}
+    <div class="cv-entry">
+      <div class="cv-logo">
+        {%- if entry.logo -%}
+          <img
+            src="{{ entry.logo | prepend: '/assets/img/logos/' | relative_url }}"
+            alt="{{ org }} logo"
+            loading="lazy"
+            width="44"
+            height="44"
+          >
+        {%- else -%}
+          <span class="cv-monogram" aria-hidden="true">{{ entry.monogram | default: org | slice: 0, 2 | upcase }}</span>
+        {%- endif -%}
+      </div>
+
+      <div class="cv-body">
+        <h4 class="cv-role">{{ entry.position }}</h4>
+        <p class="cv-org">
+          {%- if entry.url -%}
+            <a href="{{ entry.url }}" target="_blank" rel="noopener noreferrer">{{ org }}</a>
+          {%- else -%}
+            {{ org }}
+          {%- endif -%}
+        </p>
+
+        <div class="cv-meta">
+          {%- if entry.period -%}
+            <span>{{ entry.period }}</span>
+          {%- endif -%}
+          {%- if entry.period and entry.location %}<span class="cv-dot" aria-hidden="true"></span>{% endif -%}
+          {%- if entry.location -%}
+            <span>{{ entry.location }}</span>
+          {%- endif -%}
+        </div>
+
+        {%- if entry.summary %}
+          <p class="cv-fact">{{ entry.summary }}</p>
+        {%- endif -%}
+
+        {%- if entry.highlights %}
+          <ul class="cv-highlights">
+            {%- for highlight in entry.highlights -%}
+              <li>{{ highlight | markdownify | remove: '<p>' | remove: '</p>' }}</li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endfor -%}
+</div>

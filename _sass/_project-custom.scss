@@ -1,0 +1,143 @@
+/* ==========================================================================
+   Site-local project-page styling.
+
+   Small set of building blocks used inside project write-ups: a stat strip, a
+   pipeline diagram, and a callout. Like the CV styles, everything is expressed
+   through al-folio's --global-* variables so both themes follow along.
+   ========================================================================== */
+
+/* --- Stat strip ----------------------------------------------------------- */
+
+.proj-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+  margin: 1.5rem 0 2rem;
+}
+
+.proj-stat {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--global-divider-color);
+  border-radius: 10px;
+  background-color: var(--global-bg-color);
+}
+
+.proj-stat-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--global-theme-color);
+}
+
+.proj-stat-label {
+  margin-top: 0.3rem;
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.72rem;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--global-text-color-light);
+}
+
+/* --- Pipeline diagram ----------------------------------------------------- */
+
+.pipeline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.5rem;
+  margin: 1.5rem 0 2rem;
+}
+
+.pipeline-stage {
+  flex: 1 1 150px;
+  padding: 0.85rem 0.9rem;
+  border: 1px solid var(--global-divider-color);
+  border-radius: 10px;
+  background-color: var(--global-bg-color);
+}
+
+.pipeline-stage-name {
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--global-theme-color);
+}
+
+.pipeline-stage-desc {
+  margin-top: 0.35rem;
+  font-size: 0.83rem;
+  font-weight: 300;
+  line-height: 1.45;
+  color: var(--global-text-color);
+}
+
+/* Arrow between stages. Hidden from assistive tech: the ordered stage list
+   already conveys sequence. */
+.pipeline-arrow {
+  display: flex;
+  align-items: center;
+  color: var(--global-text-color-light);
+  font-size: 1rem;
+}
+
+@media (max-width: 700px) {
+  .pipeline-arrow {
+    display: none;
+  }
+
+  .pipeline-stage {
+    flex-basis: 100%;
+  }
+}
+
+/* --- Callout -------------------------------------------------------------- */
+
+.proj-note {
+  margin: 1.5rem 0;
+  padding: 0.9rem 1.1rem;
+  border-left: 3px solid var(--global-theme-color);
+  border-radius: 0 8px 8px 0;
+  background-color: var(--global-code-bg-color);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.proj-note strong {
+  color: var(--global-theme-color);
+}
+
+/* --- Compact schema table ------------------------------------------------- */
+
+.proj-table-wrap {
+  overflow-x: auto;
+  margin: 1.25rem 0;
+}
+
+.proj-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.87rem;
+}
+
+.proj-table th,
+.proj-table td {
+  padding: 0.5rem 0.7rem;
+  border-bottom: 1px solid var(--global-divider-color);
+  text-align: left;
+  vertical-align: top;
+}
+
+.proj-table th {
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--global-text-color-light);
+  white-space: nowrap;
+}
+
+.proj-table td code {
+  font-size: 0.85em;
+}

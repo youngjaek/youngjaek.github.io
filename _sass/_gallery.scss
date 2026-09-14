@@ -1,0 +1,64 @@
+/* ==========================================================================
+   Film screenshot gallery (/films/).
+   ========================================================================== */
+
+.film-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.film-card {
+  margin: 0;
+  border: 1px solid var(--global-divider-color);
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: var(--global-bg-color);
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.film-card:hover {
+  border-color: var(--global-theme-color);
+  transform: translateY(-2px);
+}
+
+/* Fixed ratio keeps a grid of mixed-aspect frames from going ragged. */
+.film-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.film-card figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 0.5rem;
+  padding: 0.7rem 0.85rem;
+}
+
+.film-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--global-text-color);
+}
+
+.film-year,
+.film-director {
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.72rem;
+  color: var(--global-text-color-light);
+}
+
+.film-note {
+  flex-basis: 100%;
+  margin-top: 0.15rem;
+  font-size: 0.85rem;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--global-text-color);
+}

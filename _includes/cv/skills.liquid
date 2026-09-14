@@ -1,0 +1,22 @@
+{%- comment -%}
+  Local override of al_folio_cv's cv/skills.liquid.
+
+  The gem renders "Label: a, b, c" as a run of comma-separated text. This
+  renders each keyword as a chip in a labelled row, which scans far faster when
+  someone is looking for one specific technology.
+
+  Consumes per entry: name, keywords (list).
+{%- endcomment -%}
+
+<div class="cv-skills">
+  {%- for entry in entries -%}
+    <div class="cv-skill-group">
+      <div class="cv-skill-name">{{ entry.name }}</div>
+      <ul class="cv-chips">
+        {%- for keyword in entry.keywords -%}
+          <li>{{ keyword }}</li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  {%- endfor -%}
+</div>

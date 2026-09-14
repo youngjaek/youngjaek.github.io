@@ -1,0 +1,72 @@
+{%- comment -%}
+  Local override of al_folio_cv's cv/education.liquid.
+
+  Mirrors the experience entry layout (logo, linked institution, metadata line)
+  and renders coursework as labelled facts rather than bullets, since
+  "Coursework: A, B, C" reads badly as a list item.
+
+  Consumes per entry: institution, degree, area, location, url, period, logo,
+  monogram, facts (label/value pairs), highlights.
+{%- endcomment -%}
+
+<div class="cv-entries">
+  {%- for entry in entries -%}
+    <div class="cv-entry">
+      <div class="cv-logo">
+        {%- if entry.logo -%}
+          <img
+            src="{{ entry.logo | prepend: '/assets/img/logos/' | relative_url }}"
+            alt="{{ entry.institution }} logo"
+            loading="lazy"
+            width="44"
+            height="44"
+          >
+        {%- else -%}
+          <span class="cv-monogram" aria-hidden="true">{{ entry.monogram | default: entry.institution | slice: 0, 2 | upcase }}</span>
+        {%- endif -%}
+      </div>
+
+      <div class="cv-body">
+        <h4 class="cv-role">
+          {{ entry.degree -}}
+          {%- if entry.area %} in {{ entry.area }}{% endif %}
+        </h4>
+        <p class="cv-org">
+          {%- if entry.url -%}
+            <a href="{{ entry.url }}" target="_blank" rel="noopener noreferrer">{{ entry.institution }}</a>
+          {%- else -%}
+            {{ entry.institution }}
+          {%- endif -%}
+        </p>
+
+        <div class="cv-meta">
+          {%- if entry.period -%}
+            <span>{{ entry.period }}</span>
+          {%- endif -%}
+          {%- if entry.period and entry.location %}<span class="cv-dot" aria-hidden="true"></span>{% endif -%}
+          {%- if entry.location -%}
+            <span>{{ entry.location }}</span>
+          {%- endif -%}
+        </div>
+
+        {%- if entry.facts %}
+          <div class="cv-facts">
+            {%- for fact in entry.facts -%}
+              <p class="cv-fact">
+                <span class="cv-fact-label">{{ fact.label }}</span>{{ fact.value | markdownify | remove: '<p>' | remove: '</p>' }}
+              </p>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        {%- if entry.highlights %}
+          <ul class="cv-highlights">
+            {%- for highlight in entry.highlights -%}
+              <li>{{ highlight | markdownify | remove: '<p>' | remove: '</p>' }}</li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endfor -%}
+</div>

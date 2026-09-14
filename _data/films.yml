@@ -1,0 +1,10 @@
+# Film screenshots shown on /films/.
+#
+# Put the image in assets/img/films/ and reference it by filename. `title` is
+# required (it becomes the alt text); year, director and note are optional.
+#
+# - image: chungking-express-01.jpg
+#   title: Chungking Express
+#   year: 1994
+#   director: Wong Kar-wai
+#   note: The pineapple tins.
