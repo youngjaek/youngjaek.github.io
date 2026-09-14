@@ -9,7 +9,7 @@
 
 .cv-entry {
   display: grid;
-  grid-template-columns: 132px 1fr;
+  grid-template-columns: 152px 1fr;
   gap: 1rem;
   padding: 1.15rem 0;
   border-bottom: 1px solid var(--global-divider-color);
@@ -167,7 +167,7 @@
 
 .cv-skill-group {
   display: grid;
-  grid-template-columns: 132px 1fr;
+  grid-template-columns: 152px 1fr;
   gap: 0.5rem 1rem;
   align-items: start;
   padding-bottom: 0.9rem;

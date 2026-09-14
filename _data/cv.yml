@@ -21,7 +21,6 @@ cv:
         location: College Park, MD
         url: https://umd.edu/
         logo: umd.png
-        logo_style: mark # square brand mark rather than a wordmark
         period: Expected May 2027
         date: 2027-05
         facts:

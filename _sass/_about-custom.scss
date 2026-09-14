@@ -106,28 +106,33 @@
   }
 }
 
-/* --- Protected email links ------------------------------------------------ */
+/* --- Protected email addresses ------------------------------------------- */
 
-/* al_email_protect renders these as <a href="#">, so they must not inherit the
-   theme's default link colour treatment for anchors that go nowhere. */
-.al-email-protect {
-  color: var(--global-theme-color);
+/* Written in [at]/[dot] form and carried as two halves in data attributes, so
+   the built HTML never contains a real address. The plugin's delegated click
+   handler rejoins and copies it. */
+.email-at {
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.86em;
+  color: var(--global-text-color);
   text-decoration: none;
   cursor: pointer;
-  /* No nowrap: the school address is long enough to overflow a phone. It wraps
-     at the [at] / [dot] spaces, which stays readable. */
+  padding: 0.05em 0.25em;
+  border-radius: 4px;
+  background-color: var(--global-code-bg-color);
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
 }
 
-.al-email-protect:hover {
-  text-decoration: underline;
+.email-at:hover,
+.email-at:focus-visible {
+  color: var(--global-theme-color);
+  background-color: var(--global-divider-color);
 }
 
-.al-email-sep {
-  opacity: 0.6;
-}
-
-/* Inside the contact icon row the link wraps an icon, not text, so it should
-   follow the row's muted styling instead. */
+/* The mail icon in the contact row uses the same handler but should follow the
+   row's muted icon styling rather than the inline address treatment. */
 .contact-row .al-email-protect {
   color: inherit;
 }
