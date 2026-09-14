@@ -9,12 +9,14 @@ profile:
   image: prof_pic.jpg
   image_circular: false # crops the image to make it circular
   # Contact row under the photo. Raw HTML because front matter is not run
-  # through Liquid, so the al_email_protect tag is not available here; the
-  # mail icon carries the two address halves in data attributes instead, which
-  # the plugin's delegated click handler reassembles and copies.
+  # through Liquid, so the al_email_protect tag is not available here. The mail
+  # icon is a real mailto:, percent-encoded by hand so the markup still carries
+  # no literal user@host string for harvesters. It must NOT carry the
+  # al-email-protect class: that handler calls preventDefault and would stop
+  # the mail client from opening.
   more_info: >
     <div class="contact-row">
-      <a href="#" class="al-email-protect" data-eu="alexykim02" data-ed="gmail.com" aria-label="Copy email address" title="Copy email address">
+      <a href="mailto:%61%6C%65%78%79%6B%69%6D%30%32@%67%6D%61%69%6C.%63%6F%6D" aria-label="Email" title="Email">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
       </a>
       <a href="https://github.com/youngjaek" target="_blank" rel="me noopener" aria-label="GitHub" title="GitHub">

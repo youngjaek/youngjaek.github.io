@@ -125,9 +125,3 @@
 .email-link:focus-visible {
   text-decoration-style: solid;
 }
-
-/* The mail icon in the contact row uses the same handler but should follow the
-   row's muted icon styling rather than the inline address treatment. */
-.contact-row .al-email-protect {
-  color: inherit;
-}
