@@ -1,61 +1,48 @@
 # CLAUDE.md
 
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 @AGENTS.md
 
-`AGENTS.md` is the authoritative entry point: change routing, the six
-non-negotiables, and the verification loop. Read it first. `README.md` covers
-running the site and adding content.
+`AGENTS.md` (imported above) is the **authoritative** agent entry point: change routing, the stop sign for gem-owned paths, the three silent failure modes, and the validated command set. Keep it short and ecosystem-neutral. Cross-repo architecture — the wrapper/tag/gem delegation table, feature gating, the v1 config contract, local overrides — lives in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md); area-to-gem ownership lives in [`docs/BOUNDARIES.md`](docs/BOUNDARIES.md).
 
-Everything below is detail that does not belong in the short entry point.
+**Read those three before editing anything.** Everything below is Claude-specific or longer-form operational detail that does not belong in the short entry point. Do not restate facts from those files here — link to them.
 
-## Why this repo looks the way it does
+## Daily dev loop
 
-It began as a clone of the al-folio **starter** template and was rebuilt as a
-personal site. The starter's own agent rules — a style contract forbidding
-`_layouts/`, `_includes/`, `_sass/`, plus visual-regression and upgrade-audit
-CI — were removed, because they exist to keep the _template_ thin and do not
-apply to a site built from it. `al_folio_core` is still the theme gem, so
-`bundle update` remains a viable upgrade path; the site simply does not use its
-visual layer.
+```bash
+bundle install                                # ruby gems
+bundle exec jekyll serve                      # dev server → http://localhost:4000/al-folio/  (NOTE baseurl)
+bundle exec jekyll build --baseurl /al-folio  # production-style build to _site/
+bash test/integration_distill.sh              # run ONE integration test (any of the seven in test/)
+npm run test:visual:update                    # refresh playwright snapshots after intentional UI change
+bundle exec al-folio upgrade apply --safe     # deterministic codemods (font-weight-* → font-*, remote→local URLs)
+bundle exec al-folio upgrade overrides diff <path>    # then `overrides accept <path>` to acknowledge an override
+```
 
-## The performance budget
+## Optional toolchains
 
-The whole point of the rebuild. Current per-page cost, uncompressed:
+- **Jupyter posts.** `bin/setup-python-deps` installs _only_ `jupyter` and `nbconvert` (via `pip --user --break-system-packages`) for `jekyll-jupyter-notebook`. It does **not** read `requirements.txt`. Missing `jupyter-nbconvert` is warn-and-continue; notebook rendering is skipped.
+- **Everything else Python.** [`requirements.txt`](requirements.txt) is the fuller list and must be installed separately (`python3 -m pip install -r requirements.txt`): `rendercv[full]` for CV rendering, `scholarly` for `bin/update_scholar_citations.py`, plus `nbconvert` and `pyyaml`.
+- **Responsive images.** `imagemagick.enabled: true` needs ImageMagick `convert` on `PATH`.
+- **Manual deploy.** `bin/deploy` is the manual `gh-pages` build + purgecss + force-push path; CI normally deploys. `purgecss` is not a devDependency — install it with `npm install -g purgecss`.
 
-| Asset                        | Size     |
-| ---------------------------- | -------- |
-| `main.css` (Sass-compressed) | ~29 KB   |
-| `site.js`                    | ~9 KB    |
-| `inter-latin-var.woff2`      | 48 KB    |
-| HTML                         | 20–41 KB |
+## Docker serving model (v1-specific)
 
-That is the entire runtime — no framework, no jQuery, no Bootstrap, no
-FontAwesome, no MathJax, no CDN. Adding any of those back needs a real reason.
+`docker compose up -d` bind-mounts the repo to `/srv/jekyll` and runs `bin/entry_point.sh`, which serves with `--force_polling --destination /tmp/_site`. The build output deliberately goes to **container-local `/tmp/_site`, not the bind-mounted `_site`** — writing `_site` back across the host bind mount caused write deadlocks. The container also `inotifywait`s `_config.yml` and restarts Jekyll on change (config edits aren't hot-reloaded by `--watch`). Verify with the `/al-folio` baseurl: `curl -fsS http://127.0.0.1:8080/al-folio/`. `docker-compose-slim.yml` pulls a prebuilt `:slim` image instead of building locally.
 
-Two consequences worth knowing:
+## CI gates and the style contract
 
-- **No MathJax.** Do not write `$$...$$` in Markdown; it renders literally.
-  Use a fenced `text` block for formulas.
-- **The command palette indexes at build time.** `_includes/palette.liquid`
-  renders every page, case study and post as a real link, so search is a
-  substring match with no JSON fetch. A new content type needs a block there.
+`npm run lint:style-contract` (`test/style_contract.js`) is the automated enforcement of the thin-starter boundary and will fail CI if you cross it. Beyond the forbidden paths listed in `AGENTS.md`, it also asserts that `_config.yml` keeps `theme: al_folio_core` and the required plugins, that the `third_party_libraries` SRI pins are present, and that the `al_math` Gemfile pin stays on a released version rather than a git branch.
 
-## Gotchas that cost time
+Other gates:
 
-- **Kramdown wraps bullets in `<p>`.** `_layouts/home.liquid` strips those tags
-  when rendering `_data/experience.yml` points so inline `**bold**` works.
-- **`.prose li` styles every `li`.** Tag pills inside prose are opted out
-  explicitly in `_sass/_prose.scss`. Any other markup list inside `.prose`
-  needs the same treatment.
-- **Inline-flex elements share a line.** `.article__back` is `display: flex`
-  with `width: fit-content` because the eyebrow after it would otherwise sit
-  beside it.
-- **The dev container writes to `/tmp/_site`,** not the bind-mounted `_site`,
-  to avoid host bind-mount write deadlocks on Windows and macOS.
+- `unit-tests.yml` — style contract plus all seven `test/integration_*.sh` scripts (`comments`, `plugin_toggles`, `distill`, `bootstrap_compat`, `upgrade_cli`, `css_minify`, `new_plugins`).
+- `visual-regression.yml` — Playwright on chromium + webkit, diffing the candidate build against a `v0.16.3` baseline worktree served on `:4100` via `BASELINE_URL`.
+- `upgrade-check.yml` — `bundle exec al-folio upgrade audit`.
+- `prettier.yml` — Prettier with `@shopify/prettier-plugin-liquid` and `printWidth: 150`. Run `npm run lint:prettier` before pushing; `npx prettier . --write` fixes.
+- `update-tocs.yml` — regenerates `<!--ts-->…<!--te-->` blocks in changed root and `docs/` Markdown files. If you add or rename a heading, expect a follow-up auto-commit on `main`.
 
-## Deploy
+## Gem version pins
 
-`.github/workflows/deploy.yml` → GitHub Pages on push to `main`. It builds with
-`JEKYLL_ENV=production` and fails on broken internal links. `baseurl` is empty
-because this is a user page served from the domain root — do not set it to a
-subpath.
+`Gemfile` pins every `al-*` gem to an exact released version in `group :al_folio_plugins`, and `_config.yml` lists the same gems under `plugins:`. Read the current pins from the `Gemfile` rather than trusting any version quoted in prose — including here. To test a gem fix against this site, repoint the `Gemfile` at a sibling checkout (`path:`, `git:`, or `branch:`) and `bundle install`; see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md#working-on-a-gem-alongside-the-starter). Revert the pin before committing.
