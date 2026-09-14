@@ -1,0 +1,141 @@
+/* ==========================================================================
+   Design tokens
+   Single source of truth for color, type, space, radius, motion.
+   Dark is the default canvas; light is a full re-declaration of the same names.
+   ========================================================================== */
+
+:root {
+  /* --- Typography ------------------------------------------------------- */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* Fluid type scale. Clamps keep the ratio sane between 380px and 1400px. */
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: clamp(1.25rem, 0.9rem + 0.9vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.1rem + 1.4vw, 2rem);
+  --text-3xl: clamp(1.875rem, 1.3rem + 2.2vw, 2.75rem);
+  --text-display: clamp(2.25rem, 1.3rem + 4vw, 4rem);
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.75;
+
+  /* Optical tracking: large type needs negative tracking to stay elegant. */
+  --tracking-display: -0.035em;
+  --tracking-heading: -0.022em;
+  --tracking-body: -0.006em;
+  --tracking-wide: 0.08em;
+
+  /* --- Space ------------------------------------------------------------ */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 2.5rem;
+  --space-8: 3rem;
+  --space-9: 4rem;
+  --space-10: 5rem;
+  --space-11: 7rem;
+  --section-gap: clamp(4rem, 3rem + 5vw, 7.5rem);
+
+  /* --- Shape ------------------------------------------------------------ */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 999px;
+
+  /* --- Measure ---------------------------------------------------------- */
+  --width-page: 1120px;
+  --width-prose: 680px;
+  --gutter: clamp(1.25rem, 0.8rem + 2vw, 2.5rem);
+
+  /* --- Motion ----------------------------------------------------------- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 120ms;
+  --duration: 200ms;
+  --duration-slow: 420ms;
+
+  --z-header: 50;
+  --z-palette: 100;
+}
+
+/* --------------------------------------------------------------------------
+   Dark theme (default)
+   -------------------------------------------------------------------------- */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #08090a;
+  --bg-subtle: #0c0d0f;
+  --bg-elevated: #101114;
+  --bg-inset: #0a0b0c;
+  --bg-hover: rgba(255, 255, 255, 0.04);
+  --bg-active: rgba(255, 255, 255, 0.07);
+
+  --text: #f2f3f5;
+  --text-muted: #9297a0;
+  --text-subtle: #7e838c; /* >= 4.5:1 on --bg (WCAG AA for small text) */
+  --text-inverse: #08090a;
+
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --border-accent: rgba(143, 155, 255, 0.4);
+
+  --accent: #8f9bff;
+  --accent-hover: #a7b0ff;
+  --accent-contrast: #0b0c1a;
+  --accent-soft: rgba(143, 155, 255, 0.12);
+  --accent-glow: rgba(143, 155, 255, 0.22);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 4px 16px -4px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 24px 48px -16px rgba(0, 0, 0, 0.85);
+
+  --selection: rgba(143, 155, 255, 0.28);
+}
+
+/* --------------------------------------------------------------------------
+   Light theme
+   -------------------------------------------------------------------------- */
+[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #ffffff;
+  --bg-subtle: #fafafa;
+  --bg-elevated: #ffffff;
+  --bg-inset: #f5f6f7;
+  --bg-hover: rgba(0, 0, 0, 0.035);
+  --bg-active: rgba(0, 0, 0, 0.06);
+
+  --text: #101114;
+  --text-muted: #5f636b;
+  --text-subtle: #6b6f78; /* >= 4.5:1 on --bg (WCAG AA for small text) */
+  --text-inverse: #ffffff;
+
+  --border: rgba(0, 0, 0, 0.09);
+  --border-strong: rgba(0, 0, 0, 0.16);
+  --border-accent: rgba(79, 70, 229, 0.35);
+
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-contrast: #ffffff;
+  --accent-soft: rgba(79, 70, 229, 0.08);
+  --accent-glow: rgba(79, 70, 229, 0.16);
+
+  --shadow-sm: 0 1px 2px rgba(15, 17, 20, 0.06);
+  --shadow-md: 0 4px 16px -4px rgba(15, 17, 20, 0.1);
+  --shadow-lg: 0 24px 48px -16px rgba(15, 17, 20, 0.18);
+
+  --selection: rgba(79, 70, 229, 0.18);
+}

@@ -1,0 +1,5 @@
+{%- comment -%}
+  One deferred script for the whole site. Deferred so it never blocks parsing;
+  everything it powers degrades gracefully if it fails to load.
+{%- endcomment -%}
+<script defer src="{{ '/assets/js/site.js' | relative_url }}"></script>

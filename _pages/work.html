@@ -1,0 +1,91 @@
+---
+layout: default
+permalink: /work/
+title: Work
+description: >
+  Long-form case studies on backend performance, cloud infrastructure,
+  retrieval systems and side projects.
+---
+
+<div class="wrap">
+  <header class="page-head">
+    <p class="eyebrow">Work</p>
+    <h1 class="page-head__title">Case studies</h1>
+    <p class="page-head__lede">
+      A résumé gives you the outcome in one line. These are the constraints, the approaches I rejected, the parts that broke, and what I would do
+      differently with more time.
+    </p>
+  </header>
+
+  {%- assign professional = site.work | where: "kind", "Professional" | sort: "order" -%} {%- assign personal = site.work | where: "kind", "Personal"
+  | sort: "order" -%}
+
+  <section class="section">
+    <div class="section__head">
+      <h2 class="section__title">Professional</h2>
+    </div>
+
+    <div class="work-grid">
+      {%- for study in professional -%}
+      <article class="card work-card">
+        <div class="work-card__top">
+          <span class="work-card__kind">{{ study.org }}</span>
+          <span class="card__meta">{{ study.period }}</span>
+        </div>
+
+        <h3 class="card__title">
+          <a class="card__link" href="{{ study.url | relative_url }}">{{ study.title }}</a>
+        </h3>
+        <p class="card__desc">{{ study.summary }}</p>
+
+        <ul class="tags">
+          {%- for tech in study.stack limit: 4 -%}
+          <li class="tag">{{ tech }}</li>
+          {%- endfor -%}
+        </ul>
+
+        {%- if study.headline_metric -%}
+        <p class="work-card__metric"><b>{{ study.headline_metric }}</b> {{ study.headline_metric_label }}</p>
+        {%- endif -%}
+      </article>
+      {%- endfor -%}
+    </div>
+  </section>
+
+  {%- if personal.size > 0 -%}
+  <section class="section">
+    <div class="section__head">
+      <div>
+        <h2 class="section__title">Personal</h2>
+        <p class="section__lede">Things I built because I wanted them to exist.</p>
+      </div>
+    </div>
+
+    <div class="work-grid">
+      {%- for study in personal -%}
+      <article class="card work-card">
+        <div class="work-card__top">
+          <span class="work-card__kind">{{ study.org }}</span>
+          <span class="card__meta">{{ study.period }}</span>
+        </div>
+
+        <h3 class="card__title">
+          <a class="card__link" href="{{ study.url | relative_url }}">{{ study.title }}</a>
+        </h3>
+        <p class="card__desc">{{ study.summary }}</p>
+
+        <ul class="tags">
+          {%- for tech in study.stack limit: 4 -%}
+          <li class="tag">{{ tech }}</li>
+          {%- endfor -%}
+        </ul>
+
+        {%- if study.headline_metric -%}
+        <p class="work-card__metric"><b>{{ study.headline_metric }}</b> {{ study.headline_metric_label }}</p>
+        {%- endif -%}
+      </article>
+      {%- endfor -%}
+    </div>
+  </section>
+  {%- endif -%}
+</div>

@@ -1,0 +1,55 @@
+# Experience timeline on the home page.
+#
+# `stack` drives the filter chips (matched lowercased, so keep spellings tidy).
+# `case_study` points at the `slug` of an entry in _work/ and renders a link
+# through to the long-form write-up.
+
+- org: Easy Dynamics
+  role: Software Engineer Intern
+  location: McLean, VA
+  start: Jun 2026
+  end: Present
+  case_study: azure-network-foundation
+  stack: [Terraform, Azure, CI/CD, GitHub Actions, NIST 800-53]
+  points:
+    - Built a **multi-region Azure network foundation in Terraform** across two-week sprints, provisioning hub-and-spoke VNets, flow logging and per-region diagnostics.
+    - Wrote input validation for region support, CIDR overlaps and subnet containment, verified by Terraform tests in a plan-only CI gate.
+    - Automated IaC release workflows with CI/CD pipelines, promoting Terraform modules from source repositories into an internal artifact registry and **eliminating manual release drift**.
+    - Validated reusable modules across multiple Azure regions against **NIST 800-53** and federal compliance standards, documenting severity-rated gaps adopted by module maintainers and platform architects.
+
+- org: MindGrasp
+  role: Software Engineer (Part-time)
+  location: Bethesda, MD
+  start: Oct 2025
+  end: May 2026
+  case_study: rag-support-drafting
+  stack: [Python, Flask, RAG, LLM, Agents]
+  points:
+    - Built a **retrieval and context-construction layer (RAG)** for an internal customer support application, assembling relevant ticket and knowledge-base context to auto-draft agent replies.
+    - Implemented a **multi-step agentic workflow with tool calling** to gather and refine context across sources, reducing manual editing time by **28%** across ~60 drafts per week.
+    - Refactored a monolithic Flask backend into modular blueprints with shared middleware and centralized error handling.
+    - Reviewed 10+ pull requests as the **primary technical reviewer** on the codebase.
+
+- org: EchoIT
+  role: Software Engineer
+  location: Seoul, South Korea
+  start: Jul 2023
+  end: Aug 2025
+  case_study: redis-cache-aside
+  stack: [Java, Spring Boot, Redis, RabbitMQ, MariaDB, Elasticsearch, Jenkins, Docker]
+  points:
+    - Reduced **P95 API latency by 85%** (200 ms to under 30 ms) with a Redis cache-aside layer, achieving a 92% cache hit rate and significantly decreasing database load at peak traffic.
+    - Engineered an **SMS verification service with RabbitMQ** handling 5,000 messages/min, with average task time under 50 ms.
+    - Developed and maintained **15+ full-stack features** for a B2B platform using Java (Spring Boot) and MariaDB, owning the lifecycle from schema design to frontend implementation.
+    - Built reusable microservice components in a Node.js backend framework and prototyped Elasticsearch integration for search, deployed through a Jenkins and Docker CI/CD pipeline.
+
+- org: University of Maryland
+  role: B.S. Computer Science & Mathematics
+  location: College Park, MD
+  start: Expected
+  end: May 2027
+  stack: [Algorithms, Databases, Compilers, Computer Vision, Mathematics]
+  points:
+    - GPA 3.534 / 4.0 — **CS Departmental Honors**, Dean's List.
+    - Coursework — Computer Networks, Database Design, Compilers, Design & Analysis of Computer Algorithms, Advanced Data Structures, Computer Vision.
+    - Mathematics — Advanced Calculus I/II, Linear Algebra, Probability Theory.

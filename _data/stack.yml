@@ -1,0 +1,16 @@
+# Toolkit section on the home page.
+
+- label: Languages
+  items: [C++, Java, Python, TypeScript, JavaScript, SQL, C, Rust, OCaml, Bash]
+
+- label: Backend & web
+  items: [Spring Boot, Node.js, Express, Flask, React, REST, RabbitMQ, Elasticsearch]
+
+- label: Data
+  items: [PostgreSQL, MySQL, MariaDB, Redis, MongoDB, SQLite]
+
+- label: Cloud & DevOps
+  items: [Azure, Terraform, Docker, Jenkins, GitHub Actions, CI/CD, Git, Linux]
+
+- label: Certifications
+  items: [HashiCorp Terraform Associate (004), Microsoft Azure Fundamentals (AZ-900)]

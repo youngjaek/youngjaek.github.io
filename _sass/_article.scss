@@ -1,0 +1,186 @@
+/* ==========================================================================
+   Article chrome: case-study and post page headers, sidebars, pagination
+   ========================================================================== */
+
+.article {
+  padding-top: clamp(2.5rem, 2rem + 3vw, 4rem);
+}
+
+/* `flex` + fit-content rather than inline-flex: the eyebrow that follows is
+   also inline-level and would otherwise share this line. */
+.article__back {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+  color: var(--text-subtle);
+  font-size: var(--text-sm);
+  transition: color var(--duration) var(--ease-out);
+}
+
+.article__back:hover {
+  color: var(--text);
+}
+
+.article__back svg {
+  width: 14px;
+  height: 14px;
+}
+
+.article__title {
+  font-size: var(--text-3xl);
+  letter-spacing: var(--tracking-display);
+}
+
+.article__lede {
+  margin-top: var(--space-4);
+  max-width: 58ch;
+  color: var(--text-muted);
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+}
+
+.article__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.article__meta .sep::before {
+  content: "·";
+}
+
+.article__divider {
+  margin-block: var(--space-7);
+  height: 1px;
+  background-image: linear-gradient(to right, var(--border-strong), transparent);
+}
+
+.article__body {
+  padding-bottom: var(--space-9);
+}
+
+/* --- Case-study fact panel ------------------------------------------------ */
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-5);
+  padding: var(--space-5);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-subtle);
+}
+
+.fact__label {
+  margin-bottom: var(--space-2);
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.fact__value {
+  color: var(--text);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: var(--leading-snug);
+}
+
+/* Outcome numbers get display treatment; they are the point of a case study. */
+.outcomes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-4);
+  margin-block: var(--space-7);
+}
+
+.outcome {
+  padding: var(--space-5);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-elevated);
+}
+
+.outcome__value {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  letter-spacing: var(--tracking-display);
+  color: var(--accent);
+}
+
+.outcome__label {
+  margin-top: var(--space-2);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+}
+
+/* --- Next / previous ------------------------------------------------------ */
+
+.article__nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  padding-top: var(--space-7);
+  border-top: 1px solid var(--border);
+}
+
+.article__nav-item {
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition:
+    border-color var(--duration) var(--ease-out),
+    background-color var(--duration) var(--ease-out);
+}
+
+.article__nav-item:hover {
+  border-color: var(--border-strong);
+  background-color: var(--bg-hover);
+}
+
+.article__nav-dir {
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.article__nav-title {
+  margin-top: var(--space-2);
+  font-weight: 500;
+}
+
+.article__nav-item--next {
+  text-align: right;
+}
+
+/* --- Index filters / groupings -------------------------------------------- */
+
+.index-group + .index-group {
+  margin-top: var(--space-8);
+}
+
+.index-group__year {
+  margin-bottom: var(--space-2);
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+}
+
+.empty-state {
+  padding: var(--space-9) 0;
+  color: var(--text-subtle);
+  text-align: center;
+}
