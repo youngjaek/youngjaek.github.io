@@ -51,4 +51,8 @@ I'm interested in distributed systems, infrastructure and system design, and dat
 
 Right now I'm a Software Engineer Intern at [Easy Dynamics](https://www.easydynamics.com), building multi-region Azure network infrastructure in Terraform and validating reusable modules against NIST 800-53. Before that I built a retrieval and agent workflow for customer support drafting at [Mindgrasp](https://www.mindgrasp.ai), and spent two years at [EchoIT](https://echoit.co.kr) in Seoul on a Java and Spring Boot backend, where a Redis caching layer took P95 API latency from 200 ms to under 30 ms.
 
+Outside of work and class, you'll usually find me watching a movie, [reading](/books/), listening to music, or working on
+calisthenics&mdash;pull-ups and pistol squats are a couple of favorites. I'm also thinking about adding a small collection of favorite films
+and albums here someday.
+
 My [resume](/resume/) has the full details, and a few things I've built on my own are on the [projects](/projects/) page. The best way to reach me is email, either my <a class="email-link al-email-protect" href="#" data-eu="ykim10" data-ed="terpmail.umd.edu" title="Click to copy the address">university address</a> or my <a class="email-link al-email-protect" href="#" data-eu="alexykim02" data-ed="gmail.com" title="Click to copy the address">personal one</a>.

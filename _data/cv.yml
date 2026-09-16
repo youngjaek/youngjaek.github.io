@@ -84,7 +84,7 @@ cv:
       - name: Cloud & DevOps
         keywords: [Microsoft Azure, Terraform, Docker, Jenkins, GitHub Actions, CI/CD, Git, Linux/Unix]
 
-    Certificates:
+    Certifications:
       - name: HashiCorp Terraform Associate (004)
         issuer: HashiCorp
         logo: terraform.svg
